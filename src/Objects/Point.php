@@ -40,7 +40,7 @@ class Point extends GeoJsonObject implements Arrayable
     public function setPoints(float $longitude, float $latitude): Point
     {
         $this->longitude = $longitude;
-        $this->latitude = $longitude;
+        $this->latitude = $latitude;
         
         return $this;
     }
