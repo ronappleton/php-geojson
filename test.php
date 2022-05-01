@@ -6,7 +6,13 @@ require 'vendor/autoload.php';
 
 use RonAppleton\GeoJson\Objects\Factory;
 use RonAppleton\GeoJson\Enums\GeoJsonType;
+use RonAppleton\GeoJson\Objects\Point;
 
-$feature = Factory::make(GeoJsonType::Feature);
+$point = Factory::make(GeoJsonType::Point);
 
-var_dump($feature);
+assert($point instanceof Point);
+
+$point->setLongitude(12.2);
+$point->setLatitude(54.7);
+
+var_dump($point->toJson());
