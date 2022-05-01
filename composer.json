@@ -8,6 +8,11 @@
             "RonAppleton\\GeoJson\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "RonAppleton\\GeoJson\\Tests": "tests/"
+        }
+    },
     "authors": [
         {
             "name": "Ron Appleton",
@@ -16,6 +21,16 @@
     ],
     "minimum-stability": "dev",
     "require": {
-        "php": ">=8.1"
+        "php": ">=8.1",
+        "stematic/testing": "dev-develop"
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
+    },
+    "scripts": {
+        "cs": "vendor/bin/testing cs:code_sniffer",
+        "test": "vendor/bin/testing test"
     }
 }
