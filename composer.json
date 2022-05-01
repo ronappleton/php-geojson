@@ -1,0 +1,19 @@
+{
+    "name": "ronappleton/php-geojson",
+    "description": "GeoJSON object builder.",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Ronappleton\\PhpGeojson\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Ron Appleton",
+            "email": "ron.appleton@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {}
+}
