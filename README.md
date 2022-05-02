@@ -19,7 +19,7 @@ The initial release of this library, will provide the functionality for use with
 ## Installation
 
 
-Please use composer to pull in the package `composer require ronappleton/php-geojson` please note that this library requires php ^8.1, I may at some point release for php ^7.4 but for the moment it is ^8.1, if anyone would like to branch this to other php version
+Please use composer to pull in the package `composer require ronappleton/php-geojson` please note that this library requires php ^8.1, I may at some point release for php ^7.4 but for the moment it is ^8.1, if anyone would like to branch this to other php versions, I will assist.
 
 
 ## Usage
