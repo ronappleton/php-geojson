@@ -6,34 +6,31 @@ namespace RonAppleton\GeoJson\Objects;
 
 use JsonException;
 use RonAppleton\GeoJson\Abstracts\GeoJsonObject;
+use RonAppleton\GeoJson\Exceptions\TooManyPoints;
 use RonAppleton\GeoJson\Interfaces\Arrayable;
 
-class Polygon extends GeoJsonObject implements Arrayable
+class BoundingBox extends GeoJsonObject implements Arrayable
 {
     /**
-     * @var array<int, Point>
+     * @var array<int, float>
      */
     private array $points;
 
     /**
-     * @return array<int, Point>
+     * @return array<int, float>
      */
     public function getPoints(): array
     {
         return $this->points;
     }
-
-    /**
-     * @param array<int, Point> $points
-     * @return Polygon
-     */
-    public function setPoints(Point ... $points): Polygon
+    
+    public function setPoints(Point $southwest, Point $northeast): BoundingBox
     {
-        $this->points = array_merge($this->points ?? [], $points);
+        $this->points = [$southwest, $northeast];
         
         return $this;
     }
-    
+
     /**
      * @throws JsonException
      */
@@ -47,6 +44,8 @@ class Polygon extends GeoJsonObject implements Arrayable
      */
     public function toArray(): array
     {
-        return array_map(static fn (Point $point) => $point->toArray(), $this->points);
+        $pointsMap = array_map(static fn (Point $point) => $point->toArray(), $this->points);
+        
+        return array_merge(... $pointsMap);
     }
 }

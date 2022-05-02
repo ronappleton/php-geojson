@@ -10,7 +10,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "RonAppleton\\GeoJson\\Tests": "tests/"
+            "RonAppleton\\GeoJson\\Tests\\": "tests/"
         }
     },
     "authors": [
@@ -21,7 +21,9 @@
     ],
     "minimum-stability": "dev",
     "require": {
-        "php": ">=8.1",
+        "php": ">=8.1"
+    },
+    "require-dev": {
         "stematic/testing": "dev-develop"
     },
     "config": {

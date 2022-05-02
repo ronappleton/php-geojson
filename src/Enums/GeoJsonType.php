@@ -15,7 +15,11 @@ enum GeoJsonType: string
     case GeometryCollection = 'GeometryCollection';
     case Feature = 'Feature';
     case FeatureCollection = 'FeatureCollection';
-    
+    case BoundingBox = 'bbox';
+
+    /**
+     * @return array<int, string>
+     */
     public static function values(): array
     {
         $values = [];

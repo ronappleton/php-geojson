@@ -8,9 +8,14 @@ use JsonException;
 use RonAppleton\GeoJson\Abstracts\GeoJsonObject;
 use RonAppleton\GeoJson\Interfaces\Arrayable;
 
+use function json_encode;
+
+use const JSON_THROW_ON_ERROR;
+
 class Point extends GeoJsonObject implements Arrayable
 {
     private float $longitude;
+    
     private float $latitude;
     
     public function getLongitude(): float
@@ -53,6 +58,9 @@ class Point extends GeoJsonObject implements Arrayable
         return json_encode($this->toArray(), JSON_THROW_ON_ERROR);
     }
 
+    /**
+     * @return array<int, float>
+     */
     public function toArray(): array
     {
         return [$this->longitude, $this->latitude];
