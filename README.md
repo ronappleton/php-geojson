@@ -15,17 +15,13 @@ For more information about GeoJSON object, please see [This Website](https://ter
 
 The initial release of this library, will provide the functionality for use within the Tile38 project, the subsequent release will be to ensure full implementation of the rfc, and then the 3rd release will provide unserialisation of GeoJSON data, back into objects.
 
-
 ## Installation
 
-
 Please use composer to pull in the package `composer require ronappleton/php-geojson` please note that this library requires php ^8.1, I may at some point release for php ^7.4 but for the moment it is ^8.1, if anyone would like to branch this to other php versions, I will assist.
-
 
 ## Usage
 
 The library provides:
-
 
 ```php
 RonAppleton\GeoJson\Enums\GeoJsonType::class
