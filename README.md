@@ -19,7 +19,7 @@ The initial release of this library, will provide the functionality for use with
 ## Installation
 
 
-Please use composer to pull in the package `composer require ronappleton/php-geojson` please note that this library requires php ^8.1
+Please use composer to pull in the package `composer require ronappleton/php-geojson` please note that this library requires php ^8.1, I may at some point release for php ^7.4 but for the moment it is ^8.1, if anyone would like to branch this to other php version
 
 
 ## Usage
@@ -54,3 +54,5 @@ And when making LineStrings for example you can also pass a count as the second 
 ```php
 [$point, $point2, $point3, $point4] = Factory::make(Point::class, 4);
 ```
+
+All objects provide a `toArray()` method and a `toJson()` method, when making objects of combined types, like Polygons etc, the toArray and toJson methods cascade through all objects so they will all be converted automatically.
