@@ -43,13 +43,13 @@ RonAppleton\GeoJson\Objects\Polygon::class
 
 It also provides a factory for convenience, this is `RonAppleton\GeoJson\Objects\Factory::class`
 
-Using the factory provides aa simple interface for creating the objects:
+Using the factory provides a simple interface for creating the objects:
 
 ```php
 $point = Factory::make(GeoJsonType::Point);
 ```
 
-And when making LineStrings for example you can also pass a count as the second parameter to the factory:
+And when making LineStrings for example, you can also pass a count as the second parameter to the factory:
 
 ```php
 [$point, $point2, $point3, $point4] = Factory::make(Point::class, 4);
