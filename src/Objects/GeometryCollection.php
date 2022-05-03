@@ -8,8 +8,9 @@ use RonAppleton\GeoJson\Abstracts\GeoJsonObject;
 
 class GeometryCollection extends GeoJsonObject
 {
-    public function toJson(): string
+
+    public function toArray(): array
     {
-        // TODO: Implement toJson() method.
+        // TODO: Implement toArray() method.
     }
 }

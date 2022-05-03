@@ -4,15 +4,9 @@ declare(strict_types=1);
 
 namespace RonAppleton\GeoJson\Objects;
 
-use JsonException;
 use RonAppleton\GeoJson\Abstracts\GeoJsonObject;
-use RonAppleton\GeoJson\Interfaces\Arrayable;
 
-use function json_encode;
-
-use const JSON_THROW_ON_ERROR;
-
-class Point extends GeoJsonObject implements Arrayable
+class Point extends GeoJsonObject
 {
     private float $longitude;
     
@@ -48,14 +42,6 @@ class Point extends GeoJsonObject implements Arrayable
         $this->latitude = $latitude;
         
         return $this;
-    }
-
-    /**
-     * @throws JsonException
-     */
-    public function toJson(): string
-    {
-        return json_encode($this->toArray(), JSON_THROW_ON_ERROR);
     }
 
     /**

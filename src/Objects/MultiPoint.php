@@ -4,16 +4,11 @@ declare(strict_types=1);
 
 namespace RonAppleton\GeoJson\Objects;
 
-use JsonException;
 use RonAppleton\GeoJson\Abstracts\GeoJsonObject;
-use RonAppleton\GeoJson\Interfaces\Arrayable;
 
-use function json_encode;
 use function array_map;
 
-use const JSON_THROW_ON_ERROR;
-
-class MultiPoint extends GeoJsonObject implements Arrayable
+class MultiPoint extends GeoJsonObject
 {
     /**
      * @var array<int, Point>
@@ -33,14 +28,6 @@ class MultiPoint extends GeoJsonObject implements Arrayable
         $this->points[] = $point;
         
         return $this;
-    }
-
-    /**
-     * @throws JsonException
-     */
-    public function toJson(): string
-    {
-        return json_encode($this->toArray(), JSON_THROW_ON_ERROR);
     }
 
     /**

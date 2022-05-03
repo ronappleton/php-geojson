@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace RonAppleton\GeoJson\Objects;
 
-use JsonException;
 use RonAppleton\GeoJson\Abstracts\GeoJsonObject;
-use RonAppleton\GeoJson\Interfaces\Arrayable;
 
-class MultiPolygon extends GeoJsonObject implements Arrayable
+class MultiPolygon extends GeoJsonObject
 {
     /**
      * @var array<int, Polygon>
@@ -32,14 +30,6 @@ class MultiPolygon extends GeoJsonObject implements Arrayable
         $this->polygons = array_merge($this->polygons ?? [], $polygons);
         
         return $this;
-    }
-    
-    /**
-     * @throws JsonException
-     */
-    public function toJson(): string
-    {
-        return json_encode($this->toArray(), JSON_THROW_ON_ERROR);
     }
 
     /**

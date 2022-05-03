@@ -4,12 +4,9 @@ declare(strict_types=1);
 
 namespace RonAppleton\GeoJson\Objects;
 
-use JsonException;
 use RonAppleton\GeoJson\Abstracts\GeoJsonObject;
-use RonAppleton\GeoJson\Exceptions\TooManyPoints;
-use RonAppleton\GeoJson\Interfaces\Arrayable;
 
-class BoundingBox extends GeoJsonObject implements Arrayable
+class BoundingBox extends GeoJsonObject
 {
     /**
      * @var array<int, float>
@@ -29,14 +26,6 @@ class BoundingBox extends GeoJsonObject implements Arrayable
         $this->points = [$southwest, $northeast];
         
         return $this;
-    }
-
-    /**
-     * @throws JsonException
-     */
-    public function toJson(): string
-    {
-        return json_encode($this->toArray(), JSON_THROW_ON_ERROR);
     }
 
     /**
