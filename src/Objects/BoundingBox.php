@@ -6,6 +6,12 @@ namespace RonAppleton\GeoJson\Objects;
 
 use RonAppleton\GeoJson\Abstracts\GeoJsonObject;
 
+use function array_map;
+use function array_merge;
+
+/**
+ * @phpcs:disable SlevomatCodingStandard.Commenting.RequireOneLinePropertyDocComment.MultiLinePropertyComment
+ */
 class BoundingBox extends GeoJsonObject
 {
     /**
@@ -29,7 +35,7 @@ class BoundingBox extends GeoJsonObject
     }
 
     /**
-     * @return array<int, array<int, float>>
+     * @return array<int, mixed>
      */
     public function toArray(): array
     {

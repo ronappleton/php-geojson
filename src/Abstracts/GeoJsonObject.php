@@ -10,12 +10,21 @@ use RonAppleton\GeoJson\Interfaces\GeoJsonObject as GeoJsonObjectInterface;
 use RonAppleton\GeoJson\Enums\GeoJsonType;
 use RonAppleton\GeoJson\Interfaces\Jsonable;
 
+use function json_encode;
+
+use const JSON_THROW_ON_ERROR;
+
 abstract class GeoJsonObject implements GeoJsonObjectInterface, Jsonable, Arrayable
 {
     public function __construct(private readonly GeoJsonType $type)
     {
     }
 
+    /**
+     * @return array<int, mixed>
+     */
+    abstract public function toArray(): array;
+    
     public function getType(): GeoJsonType
     {
         return $this->type;
@@ -28,6 +37,4 @@ abstract class GeoJsonObject implements GeoJsonObjectInterface, Jsonable, Arraya
     {
         return json_encode($this->toArray(), JSON_THROW_ON_ERROR);
     }
-    
-    abstract public function toArray(): array;
 }

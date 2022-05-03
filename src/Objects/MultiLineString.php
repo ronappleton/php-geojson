@@ -6,6 +6,12 @@ namespace RonAppleton\GeoJson\Objects;
 
 use RonAppleton\GeoJson\Abstracts\GeoJsonObject;
 
+use function array_map;
+use function array_merge;
+
+/**
+ * @phpcs:disable SlevomatCodingStandard.Commenting.RequireOneLinePropertyDocComment.MultiLinePropertyComment
+ */
 class MultiLineString extends GeoJsonObject
 {
     /**
@@ -23,7 +29,6 @@ class MultiLineString extends GeoJsonObject
 
     /**
      * @param array<int, LineString> $lineStrings
-     * @return MultiLineString
      */
     public function setLineStrings(LineString ... $lineStrings): MultiLineString
     {
@@ -32,6 +37,9 @@ class MultiLineString extends GeoJsonObject
         return $this;
     }
 
+    /**
+     * @return array<int, mixed>
+     */
     public function toArray(): array
     {
         return array_map(static fn (LineString $lineString) => $lineString->toArray(), $this->lineStrings);

@@ -8,7 +8,9 @@ use RonAppleton\GeoJson\Abstracts\GeoJsonObject;
 
 class FeatureCollection extends GeoJsonObject
 {
-
+    /**
+     * @return array<int, mixed>
+     */
     public function toArray(): array
     {
         // TODO: Implement toArray() method.

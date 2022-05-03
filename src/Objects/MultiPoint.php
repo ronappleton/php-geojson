@@ -8,6 +8,9 @@ use RonAppleton\GeoJson\Abstracts\GeoJsonObject;
 
 use function array_map;
 
+/**
+ * @phpcs:disable SlevomatCodingStandard.Commenting.RequireOneLinePropertyDocComment.MultiLinePropertyComment
+ */
 class MultiPoint extends GeoJsonObject
 {
     /**
@@ -31,7 +34,7 @@ class MultiPoint extends GeoJsonObject
     }
 
     /**
-     * @return array<int, array<int, float>>
+     * @return array<int, mixed>
      */
     public function toArray(): array
     {

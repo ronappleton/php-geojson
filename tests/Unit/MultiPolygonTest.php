@@ -11,6 +11,14 @@ use RonAppleton\GeoJson\Objects\MultiPolygon;
 use RonAppleton\GeoJson\Objects\Point;
 use RonAppleton\GeoJson\Objects\Polygon;
 
+use function json_encode;
+
+use const JSON_THROW_ON_ERROR;
+
+/**
+ * @phpcs:disable SlevomatCodingStandard.Files.FunctionLength.FunctionLength
+ * @phpcs:disable SlevomatCodingStandard.Functions.FunctionLength.FunctionLength
+ */
 class MultiPolygonTest extends TestCase
 {
     public function testSetAndGetPolygons(): void
@@ -122,8 +130,8 @@ class MultiPolygonTest extends TestCase
                         901.234, 234.567,
                     ],
                     [
-                        567.89, 890.123
-                    ]
+                        567.89, 890.123,
+                    ],
                 ],
                 [
                     [
@@ -136,8 +144,8 @@ class MultiPolygonTest extends TestCase
                         555.555, 666.666,
                     ],
                     [
-                        777.777, 888.888
-                    ]
+                        777.777, 888.888,
+                    ],
                 ],
             ],
             $array,
@@ -188,10 +196,52 @@ class MultiPolygonTest extends TestCase
         $multipolygon->setPolygons($polygon, $polygon2);
         
         $json = $multipolygon->toJson();
-        
-        $this->assertSame(
-            '[[[123.456,456.789],[789.012,12.345],[345.678,678.901],[901.234,234.567],[567.89,890.123]],[[111.111,222.222],[333.333,444.444],[555.555,666.666],[777.777,888.888]]]',
-            $json,
+
+        $jsonArray = json_encode(
+            [
+                [
+                    [
+                        123.456,
+                        456.789,
+                    ],
+                    [
+                        789.012,
+                        12.345,
+                    ],
+                    [
+                        345.678,
+                        678.901,
+                    ],
+                    [
+                        901.234,
+                        234.567,
+                    ],
+                    [
+                        567.89,
+                        890.123,
+                    ],
+                ],
+                [
+                    [
+                        111.111,
+                        222.222,
+                    ],
+                    [
+                        333.333,
+                        444.444,
+                    ],
+                    [
+                        555.555,
+                        666.666,
+                    ],
+                    [
+                        777.777,
+                        888.888,
+                    ],
+                ],
+            ],
+            JSON_THROW_ON_ERROR,
         );
+        $this->assertSame($jsonArray, $json);
     }
 }

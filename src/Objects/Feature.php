@@ -8,6 +8,13 @@ use RonAppleton\GeoJson\Abstracts\GeoJsonObject;
 use RonAppleton\GeoJson\Enums\FeatureExceptionType;
 use RonAppleton\GeoJson\Exceptions\Feature as FeatureException;
 
+use function array_merge;
+use function array_key_exists;
+use function key;
+
+/**
+ * phpcs:disable SlevomatCodingStandard.Commenting.RequireOneLinePropertyDocComment.MultiLinePropertyComment
+ */
 class Feature extends GeoJsonObject
 {
     private string $id;
@@ -71,7 +78,6 @@ class Feature extends GeoJsonObject
 
     /**
      * @param array<string, mixed> $properties
-     * @return GeoJsonObject
      */
     public function setProperties(array $properties): GeoJsonObject
     {
@@ -81,15 +87,18 @@ class Feature extends GeoJsonObject
             return $this;
         }
         
-        foreach ($properties as $key => $value) {
-            if (array_key_exists($key, $this->properties)) {
-                throw new FeatureException(FeatureExceptionType::PropertySet, $key);
+        foreach ($properties as $value) {
+            if (array_key_exists(key($value), $this->properties)) {
+                throw new FeatureException(FeatureExceptionType::PropertySet, key($value));
             }
         }
         
         return $this;
     }
-    
+
+    /**
+     * @return array<string, mixed>
+     */
     public function getProperties(): array
     {
         return $this->properties ?? throw new FeatureException(FeatureExceptionType::PropertiesNotSet);

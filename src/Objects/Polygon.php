@@ -6,6 +6,12 @@ namespace RonAppleton\GeoJson\Objects;
 
 use RonAppleton\GeoJson\Abstracts\GeoJsonObject;
 
+use function array_merge;
+use function array_map;
+
+/**
+ * @phpcs:disable SlevomatCodingStandard.Commenting.RequireOneLinePropertyDocComment.MultiLinePropertyComment
+ */
 class Polygon extends GeoJsonObject
 {
     /**
@@ -23,7 +29,6 @@ class Polygon extends GeoJsonObject
 
     /**
      * @param array<int, Point> $points
-     * @return Polygon
      */
     public function setPoints(Point ... $points): Polygon
     {
@@ -33,7 +38,7 @@ class Polygon extends GeoJsonObject
     }
 
     /**
-     * @return array<int, array<int, float>>
+     * @return array<int, mixed>
      */
     public function toArray(): array
     {

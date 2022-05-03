@@ -5,13 +5,22 @@ declare(strict_types=1);
 namespace RonAppleton\GeoJson\Tests\Unit;
 
 use JsonException;
+use PHPUnit\Framework\TestCase;
 use RonAppleton\GeoJson\Enums\GeoJsonType;
 use RonAppleton\GeoJson\Objects\Factory;
 use RonAppleton\GeoJson\Objects\LineString;
 use RonAppleton\GeoJson\Objects\MultiLineString;
 use RonAppleton\GeoJson\Objects\Point;
 
-class MultiLineStringTest extends \PHPUnit\Framework\TestCase
+use function json_encode;
+
+use const JSON_THROW_ON_ERROR;
+
+/**
+ * @phpcs:disable SlevomatCodingStandard.Files.FunctionLength.FunctionLength
+ * @phpcs:disable SlevomatCodingStandard.Functions.FunctionLength.FunctionLength
+ */
+class MultiLineStringTest extends TestCase
 {
     public function testSetAndGet(): void
     {
@@ -30,11 +39,11 @@ class MultiLineStringTest extends \PHPUnit\Framework\TestCase
         $this->assertInstanceOf(Point::class, $lineStringPoint4);
         $this->assertInstanceOf(Point::class, $lineStringPoint5);
         
-        $lineStringPoint->setPoints(-101.5, 39.662);
-        $lineStringPoint2->setPoints(-101.75, 39.2415);
-        $lineStringPoint3->setPoints(-101.23, 39.2415);
-        $lineStringPoint4->setPoints(-101.749, 39.7984);
-        $lineStringPoint5->setPoints(-101.5, 39.011);
+        $lineStringPoint->setPoints(- 101.5, 39.662);
+        $lineStringPoint2->setPoints(- 101.75, 39.2415);
+        $lineStringPoint3->setPoints(- 101.23, 39.2415);
+        $lineStringPoint4->setPoints(- 101.749, 39.7984);
+        $lineStringPoint5->setPoints(- 101.5, 39.011);
         
         $lineString->addPoints(
             $lineStringPoint,
@@ -50,15 +59,11 @@ class MultiLineStringTest extends \PHPUnit\Framework\TestCase
         $this->assertInstanceOf(Point::class, $lineString2Point2);
         $this->assertInstanceOf(Point::class, $lineString2Point3);
         
-        $lineString2Point->setPoints(-99.23, 38.6605);
-        $lineString2Point2->setPoints(-99.56, 38.727);
-        $lineString2Point3->setPoints(-99.25, 38.018);
+        $lineString2Point->setPoints(- 99.23, 38.6605);
+        $lineString2Point2->setPoints(- 99.56, 38.727);
+        $lineString2Point3->setPoints(- 99.25, 38.018);
         
-        $lineString2->addPoints(
-            $lineString2Point,
-            $lineString2Point2,
-            $lineString2Point3,
-        );
+        $lineString2->addPoints($lineString2Point, $lineString2Point2, $lineString2Point3);
         
         [$lineString3Point, $lineString3Point2, $lineString3Point3, $lineString3Point4] =
             Factory::make(GeoJsonType::Point, 4);
@@ -68,17 +73,12 @@ class MultiLineStringTest extends \PHPUnit\Framework\TestCase
         $this->assertInstanceOf(Point::class, $lineString3Point3);
         $this->assertInstanceOf(Point::class, $lineString3Point4);
         
-        $lineString3Point->setPoints(-98.499, 38.913);
-        $lineString3Point2->setPoints(-98.499, 38.913);
-        $lineString3Point3->setPoints(-98.38, 38.15);
-        $lineString3Point4->setPoints(-97.5, 38.629);
+        $lineString3Point->setPoints(- 98.499, 38.913);
+        $lineString3Point2->setPoints(- 98.499, 38.913);
+        $lineString3Point3->setPoints(- 98.38, 38.15);
+        $lineString3Point4->setPoints(- 97.5, 38.629);
         
-        $lineString3->addPoints(
-            $lineString3Point,
-            $lineString3Point2,
-            $lineString3Point3,
-            $lineString3Point4,
-        );
+        $lineString3->addPoints($lineString3Point, $lineString3Point2, $lineString3Point3, $lineString3Point4);
         
         $multiLineString = Factory::make(GeoJsonType::MultiLineString);
         
@@ -108,11 +108,11 @@ class MultiLineStringTest extends \PHPUnit\Framework\TestCase
         $this->assertInstanceOf(Point::class, $lineStringPoint4);
         $this->assertInstanceOf(Point::class, $lineStringPoint5);
 
-        $lineStringPoint->setPoints(-101.5, 39.662);
-        $lineStringPoint2->setPoints(-101.75, 39.2415);
-        $lineStringPoint3->setPoints(-101.23, 39.2415);
-        $lineStringPoint4->setPoints(-101.749, 39.7984);
-        $lineStringPoint5->setPoints(-101.5, 39.011);
+        $lineStringPoint->setPoints(- 101.5, 39.662);
+        $lineStringPoint2->setPoints(- 101.75, 39.2415);
+        $lineStringPoint3->setPoints(- 101.23, 39.2415);
+        $lineStringPoint4->setPoints(- 101.749, 39.7984);
+        $lineStringPoint5->setPoints(- 101.5, 39.011);
 
         $lineString->addPoints(
             $lineStringPoint,
@@ -128,15 +128,11 @@ class MultiLineStringTest extends \PHPUnit\Framework\TestCase
         $this->assertInstanceOf(Point::class, $lineString2Point2);
         $this->assertInstanceOf(Point::class, $lineString2Point3);
 
-        $lineString2Point->setPoints(-99.23, 38.6605);
-        $lineString2Point2->setPoints(-99.56, 38.727);
-        $lineString2Point3->setPoints(-99.25, 38.018);
+        $lineString2Point->setPoints(- 99.23, 38.6605);
+        $lineString2Point2->setPoints(- 99.56, 38.727);
+        $lineString2Point3->setPoints(- 99.25, 38.018);
 
-        $lineString2->addPoints(
-            $lineString2Point,
-            $lineString2Point2,
-            $lineString2Point3,
-        );
+        $lineString2->addPoints($lineString2Point, $lineString2Point2, $lineString2Point3,);
 
         [$lineString3Point, $lineString3Point2, $lineString3Point3, $lineString3Point4] =
             Factory::make(GeoJsonType::Point, 4);
@@ -146,17 +142,12 @@ class MultiLineStringTest extends \PHPUnit\Framework\TestCase
         $this->assertInstanceOf(Point::class, $lineString3Point3);
         $this->assertInstanceOf(Point::class, $lineString3Point4);
 
-        $lineString3Point->setPoints(-98.499, 38.913);
-        $lineString3Point2->setPoints(-98.499, 38.913);
-        $lineString3Point3->setPoints(-98.38, 38.15);
-        $lineString3Point4->setPoints(-97.5, 38.629);
+        $lineString3Point->setPoints(- 98.499, 38.913);
+        $lineString3Point2->setPoints(- 98.499, 38.913);
+        $lineString3Point3->setPoints(- 98.38, 38.15);
+        $lineString3Point4->setPoints(- 97.5, 38.629);
 
-        $lineString3->addPoints(
-            $lineString3Point,
-            $lineString3Point2,
-            $lineString3Point3,
-            $lineString3Point4,
-        );
+        $lineString3->addPoints($lineString3Point, $lineString3Point2, $lineString3Point3, $lineString3Point4);
 
         $multiLineString = Factory::make(GeoJsonType::MultiLineString);
 
@@ -170,25 +161,25 @@ class MultiLineStringTest extends \PHPUnit\Framework\TestCase
         $this->assertSame(
             [
                 [
-                    [-101.5, 39.662],
-                    [-101.75, 39.2415],
-                    [-101.23, 39.2415],
-                    [-101.749, 39.7984],
-                    [-101.5, 39.011]
+                    [- 101.5, 39.662],
+                    [- 101.75, 39.2415],
+                    [- 101.23, 39.2415],
+                    [- 101.749, 39.7984],
+                    [- 101.5, 39.011],
                 ],
                 [
-                    [-99.23, 38.6605],
-                    [-99.56, 38.727],
-                    [-99.25, 38.018]
+                    [- 99.23, 38.6605],
+                    [- 99.56, 38.727],
+                    [- 99.25, 38.018],
                 ],
                 [
-                    [-98.499, 38.913],
-                    [-98.499, 38.913],
-                    [-98.38, 38.15],
-                    [-97.5, 38.629]
+                    [- 98.499, 38.913],
+                    [- 98.499, 38.913],
+                    [- 98.38, 38.15],
+                    [- 97.5, 38.629],
                 ],
             ],
-            $array
+            $array,
         );
     }
 
@@ -212,11 +203,11 @@ class MultiLineStringTest extends \PHPUnit\Framework\TestCase
         $this->assertInstanceOf(Point::class, $lineStringPoint4);
         $this->assertInstanceOf(Point::class, $lineStringPoint5);
 
-        $lineStringPoint->setPoints(-101.5, 39.662);
-        $lineStringPoint2->setPoints(-101.75, 39.2415);
-        $lineStringPoint3->setPoints(-101.23, 39.2415);
-        $lineStringPoint4->setPoints(-101.749, 39.7984);
-        $lineStringPoint5->setPoints(-101.5, 39.011);
+        $lineStringPoint->setPoints(- 101.5, 39.662);
+        $lineStringPoint2->setPoints(- 101.75, 39.2415);
+        $lineStringPoint3->setPoints(- 101.23, 39.2415);
+        $lineStringPoint4->setPoints(- 101.749, 39.7984);
+        $lineStringPoint5->setPoints(- 101.5, 39.011);
 
         $lineString->addPoints(
             $lineStringPoint,
@@ -232,15 +223,11 @@ class MultiLineStringTest extends \PHPUnit\Framework\TestCase
         $this->assertInstanceOf(Point::class, $lineString2Point2);
         $this->assertInstanceOf(Point::class, $lineString2Point3);
 
-        $lineString2Point->setPoints(-99.23, 38.6605);
-        $lineString2Point2->setPoints(-99.56, 38.727);
-        $lineString2Point3->setPoints(-99.25, 38.018);
+        $lineString2Point->setPoints(- 99.23, 38.6605);
+        $lineString2Point2->setPoints(- 99.56, 38.727);
+        $lineString2Point3->setPoints(- 99.25, 38.018);
 
-        $lineString2->addPoints(
-            $lineString2Point,
-            $lineString2Point2,
-            $lineString2Point3,
-        );
+        $lineString2->addPoints($lineString2Point, $lineString2Point2, $lineString2Point3,);
 
         [$lineString3Point, $lineString3Point2, $lineString3Point3, $lineString3Point4] =
             Factory::make(GeoJsonType::Point, 4);
@@ -250,17 +237,12 @@ class MultiLineStringTest extends \PHPUnit\Framework\TestCase
         $this->assertInstanceOf(Point::class, $lineString3Point3);
         $this->assertInstanceOf(Point::class, $lineString3Point4);
 
-        $lineString3Point->setPoints(-98.499, 38.913);
-        $lineString3Point2->setPoints(-98.499, 38.913);
-        $lineString3Point3->setPoints(-98.38, 38.15);
-        $lineString3Point4->setPoints(-97.5, 38.629);
+        $lineString3Point->setPoints(- 98.499, 38.913);
+        $lineString3Point2->setPoints(- 98.499, 38.913);
+        $lineString3Point3->setPoints(- 98.38, 38.15);
+        $lineString3Point4->setPoints(- 97.5, 38.629);
 
-        $lineString3->addPoints(
-            $lineString3Point,
-            $lineString3Point2,
-            $lineString3Point3,
-            $lineString3Point4,
-        );
+        $lineString3->addPoints($lineString3Point, $lineString3Point2, $lineString3Point3, $lineString3Point4,);
 
         $multiLineString = Factory::make(GeoJsonType::MultiLineString);
 
@@ -275,27 +257,27 @@ class MultiLineStringTest extends \PHPUnit\Framework\TestCase
             json_encode(
                 [
                     [
-                        [-101.5, 39.662],
-                        [-101.75, 39.2415],
-                        [-101.23, 39.2415],
-                        [-101.749, 39.7984],
-                        [-101.5, 39.011]
+                        [- 101.5, 39.662],
+                        [- 101.75, 39.2415],
+                        [- 101.23, 39.2415],
+                        [- 101.749, 39.7984],
+                        [- 101.5, 39.011],
                     ],
                     [
-                        [-99.23, 38.6605],
-                        [-99.56, 38.727],
-                        [-99.25, 38.018]
+                        [- 99.23, 38.6605],
+                        [- 99.56, 38.727],
+                        [- 99.25, 38.018],
                     ],
                     [
-                        [-98.499, 38.913],
-                        [-98.499, 38.913],
-                        [-98.38, 38.15],
-                        [-97.5, 38.629]
+                        [- 98.499, 38.913],
+                        [- 98.499, 38.913],
+                        [- 98.38, 38.15],
+                        [- 97.5, 38.629],
                     ],
                 ],
-                JSON_THROW_ON_ERROR
+                JSON_THROW_ON_ERROR,
             ),
-            $json
+            $json,
         );
     }
 }

@@ -6,5 +6,8 @@ namespace RonAppleton\GeoJson\Interfaces;
 
 interface Arrayable
 {
+    /**
+     * @return array<int, mixed>
+     */
     public function toArray(): array;
 }

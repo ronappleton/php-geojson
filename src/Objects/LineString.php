@@ -11,6 +11,9 @@ use function array_merge;
 use function count;
 use function array_map;
 
+/**
+ * @phpcs:disable SlevomatCodingStandard.Commenting.RequireOneLinePropertyDocComment.MultiLinePropertyComment
+ */
 class LineString extends GeoJsonObject
 {
     /** 

@@ -10,8 +10,6 @@ use RonAppleton\GeoJson\Interfaces\GeoJsonObject;
 class Factory
 {
     /**
-     * @param GeoJsonType $type
-     * @param int $count
      * @return GeoJsonObject|array<int, GeoJsonObject>
      */
     public static function make(GeoJsonType $type, int $count = 1): GeoJsonObject|array
@@ -29,13 +27,12 @@ class Factory
     }
 
     /**
-     * @param GeoJsonType $type
-     * @param int $count
      * @return array<int, GeoJsonObject>
      */
     private static function getManyObjects(GeoJsonType $type, int $count): array
     {
         $objects = [];
+        
         for ($i = 0; $i < $count; $i++) {
             $objects[] = new (self::getClass($type))($type);
         }

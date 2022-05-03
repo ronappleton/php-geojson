@@ -11,6 +11,10 @@ use RonAppleton\GeoJson\Objects\Factory;
 use RonAppleton\GeoJson\Objects\Point;
 use RonAppleton\GeoJson\Objects\Polygon;
 
+/**
+ * @phpcs:disable SlevomatCodingStandard.Files.FunctionLength.FunctionLength
+ * @phpcs:disable SlevomatCodingStandard.Functions.FunctionLength.FunctionLength
+ */
 class PolygonTest extends TestCase
 {
     public function testAddAndGetPoints(): void
@@ -71,9 +75,9 @@ class PolygonTest extends TestCase
                 [789.012, 012.345],
                 [345.678, 678.901],
                 [901.234, 234.567],
-                [567.890, 890.123]
+                [567.890, 890.123],
             ],
-            $array
+            $array,
         );
     }
 
