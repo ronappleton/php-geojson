@@ -16,6 +16,11 @@ abstract class GeoJsonObject implements GeoJsonObjectInterface, Jsonable, Arraya
     {
     }
 
+    public function getType(): GeoJsonType
+    {
+        return $this->type;
+    }
+
     /**
      * @throws JsonException
      */
