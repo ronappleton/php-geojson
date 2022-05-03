@@ -6,6 +6,7 @@ namespace RonAppleton\GeoJson\Tests\Unit;
 
 use JsonException;
 use PHPUnit\Framework\TestCase;
+use RonAppleton\GeoJson\Abstracts\GeoJsonObject;
 use RonAppleton\GeoJson\Enums\GeoJsonType;
 use RonAppleton\GeoJson\Objects\Factory;
 use RonAppleton\GeoJson\Objects\Point;
@@ -95,5 +96,14 @@ class PointTest extends TestCase
         $point->setLatitude(123.123);
         $longitude = $point->getLatitude();
         $this->assertSame(123.123, $longitude);
+    }
+    
+    public function testGetType(): void
+    {
+        $point = Factory::make(GeoJsonType::Point);
+        
+        $this->assertInstanceOf(GeoJsonObject::class, $point);
+        
+        $$point->getType();
     }
 }

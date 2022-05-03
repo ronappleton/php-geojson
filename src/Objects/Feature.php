@@ -10,10 +10,10 @@ use RonAppleton\GeoJson\Exceptions\Feature as FeatureException;
 
 use function array_merge;
 use function array_key_exists;
-use function key;
+use function array_keys;
 
 /**
- * phpcs:disable SlevomatCodingStandard.Commenting.RequireOneLinePropertyDocComment.MultiLinePropertyComment
+ * @phpcs:disable SlevomatCodingStandard.Commenting.RequireOneLinePropertyDocComment.MultiLinePropertyComment
  */
 class Feature extends GeoJsonObject
 {
@@ -31,7 +31,7 @@ class Feature extends GeoJsonObject
     public function setId(string $id): Feature
     {
         if (isset($this->id)) {
-            throw new FeatureException(FeatureExceptionType::IdNotSet);
+            throw new FeatureException(FeatureExceptionType::IdSet);
         }
         
         $this->id = $id;
@@ -87,9 +87,9 @@ class Feature extends GeoJsonObject
             return $this;
         }
         
-        foreach ($properties as $value) {
-            if (array_key_exists(key($value), $this->properties)) {
-                throw new FeatureException(FeatureExceptionType::PropertySet, key($value));
+        foreach (array_keys($properties) as $key) {
+            if (array_key_exists($key, $this->properties)) {
+                throw new FeatureException(FeatureExceptionType::PropertySet, $key);
             }
         }
         
@@ -126,7 +126,7 @@ class Feature extends GeoJsonObject
     public function toArray(): array
     {
         $array = [
-            'type' => $this->getType(),
+            'type' => $this->getType()->value,
             'geometry' => $this->geometry?->toArray(),
             'properties' => $this->properties ?? null,
         ];
