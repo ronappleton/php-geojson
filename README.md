@@ -12,7 +12,7 @@ This library is a simple builder for GeoJSON objects for use within php.
 
 The inspiration for this is another project I am working on [Tile38 PHP Client](https://github.com/ronappleton/tile38-php-client) in that project part of the requirement is valid GeoJSON objects, so this library is being made to fulfill that requirement.
 
-For more information about GeoJSON object, please see [This Website](https://terraformer-js.github.io/glossary/) or the official [RFC 7946](https://datatracker.ietf.org/doc/html/rfc7946)
+For more information about GeoJSON objects, please see [This Website](https://terraformer-js.github.io/glossary/) or the official [RFC 7946](https://datatracker.ietf.org/doc/html/rfc7946)
 
 The initial release of this library, will provide the functionality for use within the Tile38 project, the subsequent release will be to ensure full implementation of the rfc, and then the 3rd release will provide unserialisation of GeoJSON data, back into objects.
 
