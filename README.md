@@ -7,7 +7,6 @@ GeoJSON object builder.
 [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/fe5f212d36ba4eaca8d982362b254ea0)](https://www.codacy.com/gh/ronappleton/php-geojson/dashboard?utm_source=github.com&utm_medium=referral&utm_content=ronappleton/php-geojson&utm_campaign=Badge_Coverage)
 [![Dependents](http://poser.pugx.org/ronappleton/php-geojson/dependents)](https://packagist.org/packages/ronappleton/php-geojson)
 
-
 ## Introduction
 
 This library is a simple builder for GeoJSON objects for use within php.
