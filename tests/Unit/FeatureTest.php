@@ -188,6 +188,10 @@ class FeatureTest extends TestCase
         ];
         
         $feature = $feature->setProperties($properties);
+
+        $this->assertInstanceOf(Feature::class, $feature);
+        
+        $feature = $feature->setProperties(['new' => 'property']);
         
         $this->assertInstanceOf(Feature::class, $feature);
         

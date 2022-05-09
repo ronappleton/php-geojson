@@ -6,6 +6,9 @@ namespace RonAppleton\GeoJson\Objects;
 
 use RonAppleton\GeoJson\Abstracts\GeoJsonObject;
 
+use RonAppleton\GeoJson\Enums\PolygonExceptionType;
+use RonAppleton\GeoJson\Exceptions\Polygon as PolygonException;
+
 use function array_merge;
 use function array_map;
 
@@ -24,7 +27,7 @@ class Polygon extends GeoJsonObject
      */
     public function getPoints(): array
     {
-        return $this->points;
+        return $this->points ?? throw new PolygonException(PolygonExceptionType::PointsNotSet);
     }
 
     /**
@@ -32,6 +35,10 @@ class Polygon extends GeoJsonObject
      */
     public function setPoints(Point ... $points): Polygon
     {
+        if (isset($this->points)) {
+            throw new PolygonException(PolygonExceptionType::PointsSet);
+        }
+        
         $this->points = array_merge($this->points ?? [], $points);
         
         return $this;
