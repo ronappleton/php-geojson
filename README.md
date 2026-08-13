@@ -15,7 +15,7 @@ The inspiration for this is another project I am working on [Tile38 PHP Client](
 
 For more information about GeoJSON objects, please see [This Website](https://terraformer-js.github.io/glossary/) or the official [RFC 7946](https://datatracker.ietf.org/doc/html/rfc7946)
 
-The initial release of this library provides the functionality for use within the Tile38 project, this release ensures full implementation of the RFC 7946 serialization, and a future release will provide unserialisation of GeoJSON data, back into objects.
+The initial release of this library provides the functionality for use within the Tile38 project, this release ensures full implementation of the RFC 7946 serialisation and unserialisation of GeoJSON data.
 
 ## Installation
 
@@ -37,9 +37,12 @@ RonAppleton\GeoJson\Objects\MultiPoint::class
 RonAppleton\GeoJson\Objects\MultiPolygon::class
 RonAppleton\GeoJson\Objects\Point::class
 RonAppleton\GeoJson\Objects\Polygon::class
+RonAppleton\GeoJson\Objects\Parser::class
 ```
 
 It also provides a factory for convenience, this is `RonAppleton\GeoJson\Objects\Factory::class`
+
+And a parser for unserialisation, this is `RonAppleton\GeoJson\Objects\Parser::class`
 
 Using the factory provides a simple interface for creating the objects:
 
@@ -131,6 +134,30 @@ For three-dimensional data pass a minimum and maximum altitude:
 $boundingBox->setAltitudes(-4.0, 6.0);
 $boundingBox->toArray(); // [west, south, -4.0, east, north, 6.0]
 ```
+
+## Unserialisation
+
+The library provides a parser for converting GeoJSON strings and arrays back into objects. This gives clean round-trip symmetry with `toJson()` and `toArray()`:
+
+```php
+use RonAppleton\GeoJson\Objects\Parser;
+
+// From a JSON string
+$featureCollection = Parser::fromJson('{"type":"FeatureCollection","features":[...]}');
+$featureCollection->toArray(); // same structure as toJson() output
+
+// From a decoded array (e.g. from json_decode)
+$point = Parser::fromArray(['type' => 'Point', 'coordinates' => [100.0, 0.0]]);
+```
+
+A bare position array (2 or 3 elements) is also accepted and returns a `Point`, matching the library's position-primitive convention:
+
+```php
+$point = Parser::fromArray([100.0, 0.0, 10.0]);
+$point->toArray(); // [100.0, 0.0, 10.0]
+```
+
+The parser validates GeoJSON structure and delegates to the existing setters for range checking (e.g. longitude/latitude bounds, bounding box ordering). Invalid input throws `RonAppleton\GeoJson\Exceptions\Parse`.
 
 ## Testing
 

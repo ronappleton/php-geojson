@@ -13,6 +13,7 @@
         <properties>
             <property name="complexity" value="5" />
         </properties>
+        <exclude-pattern>*/Objects/Parser.php</exclude-pattern>
     </rule>
 
     <rule ref="Generic.Formatting.SpaceAfterCast"/>
@@ -92,10 +93,16 @@
         <exclude name="SlevomatCodingStandard.Classes.RequireSingleLineMethodSignature" />
         <exclude name="SlevomatCodingStandard.Operators.DisallowIncrementAndDecrementOperators" />
         <exclude name="SlevomatCodingStandard.TypeHints.UnionTypeHintFormat" />
+        <exclude name="SlevomatCodingStandard.Files.FileLength.FileTooLong" />
     </rule>
 
     <!-- test expectations mirror the type-first output of the library, not alphabetical order -->
     <rule ref="SlevomatCodingStandard.Arrays.AlphabeticallySortedByKeys">
+        <exclude-pattern>*/tests/*</exclude-pattern>
+    </rule>
+
+    <!-- test classes may be long due to comprehensive coverage -->
+    <rule ref="SlevomatCodingStandard.Classes.ClassLength">
         <exclude-pattern>*/tests/*</exclude-pattern>
     </rule>
 
