@@ -7,92 +7,68 @@ namespace RonAppleton\GeoJson\Objects;
 use RonAppleton\GeoJson\Abstracts\GeoJsonObject;
 use RonAppleton\GeoJson\Enums\FeatureExceptionType;
 use RonAppleton\GeoJson\Exceptions\Feature as FeatureException;
+use RonAppleton\GeoJson\Interfaces\GeoJsonObject as GeoJsonObjectInterface;
 
-use function array_merge;
 use function array_key_exists;
 use function array_keys;
+use function array_merge;
 
-/**
- * @phpcs:disable SlevomatCodingStandard.Commenting.RequireOneLinePropertyDocComment.MultiLinePropertyComment
- */
 class Feature extends GeoJsonObject
 {
-    private string $id;
-    
-    private BoundingBox $boundingBox;
-    
-    private GeoJsonObject $geometry;
+    private null | string | int $id = null;
+
+    private ?GeoJsonObjectInterface $geometry = null;
 
     /**
-     * @var array<int, mixed>
+     * @var array<string, mixed>|null
      */
-    private array $properties;
-    
-    public function setId(string $id): Feature
+    private ?array $properties = null;
+
+    public function setId(string | int $id): static
     {
-        if (isset($this->id)) {
+        if ($this->id !== null) {
             throw new FeatureException(FeatureExceptionType::IdSet);
         }
-        
+
         $this->id = $id;
-        
+
         return $this;
     }
-    
-    public function getId(): string
+
+    public function getId(): string | int
     {
         return $this->id ?? throw new FeatureException(FeatureExceptionType::IdNotSet);
     }
-    
-    public function setBoundingBox(BoundingBox $boundingBox): Feature
+
+    public function setGeometry(?GeoJsonObjectInterface $geometry): static
     {
-        if (isset($this->boundingBox)) {
-            throw new FeatureException(FeatureExceptionType::BoundingBoxSet);
-        }
-        
-        $this->boundingBox = $boundingBox;
-        
-        return $this;
-    }
-    
-    public function getBoundingBox(): BoundingBox
-    {
-        return $this->boundingBox ?? throw new FeatureException(FeatureExceptionType::BoundingBoxNotSet);
-    }
-    
-    public function setGeometry(GeoJsonObject $geometry): Feature
-    {
-        if (isset($this->geometry)) {
+        if ($this->geometry !== null) {
             throw new FeatureException(FeatureExceptionType::GeometrySet);
         }
-        
+
+        if ($geometry !== null && !$geometry->getType()->isGeometry()) {
+            throw new FeatureException(FeatureExceptionType::NotAGeometry);
+        }
+
         $this->geometry = $geometry;
-        
+
         return $this;
     }
-    
-    public function getGeometry(): GeoJsonObject
+
+    public function getGeometry(): ?GeoJsonObjectInterface
     {
-        return $this->geometry ?? throw new FeatureException(FeatureExceptionType::GeometryNotSet);
+        return $this->geometry;
     }
 
     /**
      * @param array<string, mixed> $properties
      */
-    public function setProperties(array $properties): GeoJsonObject
+    public function setProperties(array $properties): static
     {
-        if (!isset($this->properties)) {
-            $this->properties = array_merge($this->properties ?? [], $properties);
-            
-            return $this;
-        }
-        
-        foreach (array_keys($properties) as $key) {
-            if (array_key_exists($key, $this->properties)) {
-                throw new FeatureException(FeatureExceptionType::PropertySet, $key);
-            }
-        }
-        
+        $this->assertPropertiesNotSet($properties);
+
+        $this->properties = array_merge($this->properties ?? [], $properties);
+
         return $this;
     }
 
@@ -103,18 +79,18 @@ class Feature extends GeoJsonObject
     {
         return $this->properties ?? throw new FeatureException(FeatureExceptionType::PropertiesNotSet);
     }
-    
-    public function setProperty(string $key, mixed $value): GeoJsonObject
+
+    public function setProperty(string $key, mixed $value): static
     {
-        if ($this->properties[$key] ?? null) {
+        if (isset($this->properties) && array_key_exists($key, $this->properties)) {
             throw new FeatureException(FeatureExceptionType::PropertySet, $key);
         }
-        
+
         $this->properties[$key] = $value;
-        
+
         return $this;
     }
-    
+
     public function getProperty(string $key): mixed
     {
         return $this->properties[$key] ?? throw new FeatureException(FeatureExceptionType::PropertyNotSet, $key);
@@ -127,14 +103,27 @@ class Feature extends GeoJsonObject
     {
         $array = [
             'type' => $this->getType()->value,
-            'geometry' => $this->geometry?->toArray(),
-            'properties' => $this->properties ?? null,
         ];
-        
-        if ($this->boundingBox ?? null) {
-            $array['bbox'] = $this->boundingBox->toArray();
+
+        if ($this->id !== null) {
+            $array['id'] = $this->id;
         }
-        
-        return $array;
+
+        $array['geometry'] = $this->geometry?->toArray();
+        $array['properties'] = $this->properties;
+
+        return $this->withBoundingBox($array);
+    }
+
+    /**
+     * @param array<string, mixed> $properties
+     */
+    private function assertPropertiesNotSet(array $properties): void
+    {
+        foreach (array_keys($properties) as $key) {
+            if (isset($this->properties) && array_key_exists($key, $this->properties)) {
+                throw new FeatureException(FeatureExceptionType::PropertySet, (string) $key);
+            }
+        }
     }
 }

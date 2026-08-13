@@ -4,89 +4,125 @@ declare(strict_types=1);
 
 namespace RonAppleton\GeoJson\Tests\Unit;
 
-use JsonException;
 use PHPUnit\Framework\TestCase;
 use RonAppleton\GeoJson\Enums\GeoJsonType;
+use RonAppleton\GeoJson\Exceptions\NotEnoughPoints;
+use RonAppleton\GeoJson\Exceptions\Polygon as PolygonException;
 use RonAppleton\GeoJson\Objects\Factory;
-use RonAppleton\GeoJson\Objects\Feature;
 use RonAppleton\GeoJson\Objects\Point;
 use RonAppleton\GeoJson\Objects\Polygon;
-use RonAppleton\GeoJson\Exceptions\Polygon as PolygonException;
 
-/**
- * @phpcs:disable SlevomatCodingStandard.Files.FunctionLength.FunctionLength
- * @phpcs:disable SlevomatCodingStandard.Functions.FunctionLength.FunctionLength
- */
 class PolygonTest extends TestCase
 {
-    private Polygon $polygon;
     private Point $point;
+
     private Point $point2;
+
     private Point $point3;
-    
-    protected function setUp(): void
-    {
-        parent::setUp();
 
-        $this->polygon = Factory::make(GeoJsonType::Polygon);
-        [$this->point, $this->point2, $this->point3] = Factory::make(GeoJsonType::Point, 3);
+    private Point $point4;
 
-        $this->point->setPoints(123.456, 456.789);
-        $this->point2->setPoints(789.012, 012.345);
-        $this->point3->setPoints(789.012, 012.345);
-    }
-    
-    public function testSetPolygonPoints(): void
+    public function testSetExteriorRing(): void
     {
-        $polygon = $this->polygon->setPoints($this->point, $this->point2);
+        $polygon = Factory::make(GeoJsonType::Polygon);
+        $polygon->setExteriorRing($this->point, $this->point2, $this->point3, $this->point4);
+
         $this->assertInstanceOf(Polygon::class, $polygon);
-    }
-    
-    public function testCannotSetPolygonPoints(): void
-    {
-        $this->polygon->setPoints($this->point, $this->point2);
-        
-        $this->expectException(PolygonException::class);
-        $this->expectExceptionMessage('Polygons points are already set.');
-
-        $this->polygon->setPoints($this->point3);
-    }
-    
-    public function testGetPolygonPoints(): void
-    {
-        $polygon = $this->polygon->setPoints($this->point, $this->point2);
-        $array = $polygon->getPoints();
-        
-        $this->assertIsArray($array);
-        $this->assertCount(2, $array);
-    }
-    
-    public function testCannotGetPolygonPoints(): void
-    {
-        $polygon = $this->polygon->setPoints($this->point);
-        
-        $this->expectException(PolygonException::class);
-        $this->expectExceptionMessage('Polygons points are already set.');
-        
-        $polygon->setPoints($this->point);
+        $this->assertCount(1, $polygon->getRings());
     }
 
-    public function testToArray(): void
+    public function testCannotSetExteriorRingTwice(): void
     {
-        $this->polygon->setPoints($this->point, $this->point2, $this->point3);
-        
-        $array = $this->polygon->toArray();
-        
-        $this->assertIsArray($array);
-        $this->assertCount(3, $array);
-        
+        $polygon = Factory::make(GeoJsonType::Polygon);
+        $polygon->setExteriorRing($this->point, $this->point2, $this->point3, $this->point4);
+
+        $this->expectException(PolygonException::class);
+        $this->expectExceptionMessage('The exterior ring is already set.');
+
+        $polygon->setExteriorRing($this->point, $this->point2, $this->point3, $this->point4);
+    }
+
+    public function testCannotAddInteriorRingBeforeExterior(): void
+    {
+        $polygon = Factory::make(GeoJsonType::Polygon);
+
+        $this->expectException(PolygonException::class);
+        $this->expectExceptionMessage('The exterior ring must be set before adding interior rings.');
+
+        $polygon->addInteriorRing($this->point, $this->point2, $this->point3, $this->point4);
+    }
+
+    public function testAddInteriorRing(): void
+    {
+        $polygon = Factory::make(GeoJsonType::Polygon);
+        $polygon->setExteriorRing($this->point, $this->point2, $this->point3, $this->point4);
+        $polygon->addInteriorRing($this->point, $this->point2, $this->point3, $this->point4);
+
+        $this->assertCount(2, $polygon->getRings());
+    }
+
+    public function testToArrayWithHole(): void
+    {
+        [$holePoint, $holePoint2, $holePoint3, $holePoint4] = Factory::make(GeoJsonType::Point, 4);
+
+        $holePoint->setPoints(100.2, 0.2);
+        $holePoint2->setPoints(100.8, 0.2);
+        $holePoint3->setPoints(100.8, 0.8);
+        $holePoint4->setPoints(100.2, 0.2);
+
+        $polygon = Factory::make(GeoJsonType::Polygon);
+        $polygon->setExteriorRing($this->point, $this->point2, $this->point3, $this->point4);
+        $polygon->addInteriorRing($holePoint, $holePoint2, $holePoint3, $holePoint4);
+
         $this->assertSame(
             [
-                [123.456, 456.789],
-                [789.012, 012.345],
-                [789.012, 012.345],
+                'type' => 'Polygon',
+                'coordinates' => [
+                    [[100.0, 0.0], [101.0, 0.0], [101.0, 1.0], [100.0, 0.0]],
+                    [[100.2, 0.2], [100.8, 0.2], [100.8, 0.8], [100.2, 0.2]],
+                ],
             ],
-            $array,
+            $polygon->toArray(),
         );
+    }
+
+    public function testRingNotClosed(): void
+    {
+        $point5 = Factory::make(GeoJsonType::Point);
+        $point5->setPoints(100.0, 1.0);
+
+        $polygon = Factory::make(GeoJsonType::Polygon);
+        $polygon->setExteriorRing($this->point, $this->point2, $this->point3, $point5);
+
+        $this->expectException(PolygonException::class);
+        $this->expectExceptionMessage('Polygon rings must be closed. The first and last positions must be identical.');
+
+        $polygon->toArray();
+    }
+
+    public function testNotEnoughPoints(): void
+    {
+        $polygon = Factory::make(GeoJsonType::Polygon);
+        $polygon->setExteriorRing($this->point, $this->point2, $this->point3);
+
+        $this->expectException(NotEnoughPoints::class);
+        $this->expectExceptionMessage('You have not provided enough points, 3 provided, 4 required.');
+
+        $polygon->toArray();
+    }
+
+    protected function setUp(): void
+    {
+        $this->point = Factory::make(GeoJsonType::Point);
+        $this->point->setPoints(100.0, 0.0);
+
+        $this->point2 = Factory::make(GeoJsonType::Point);
+        $this->point2->setPoints(101.0, 0.0);
+
+        $this->point3 = Factory::make(GeoJsonType::Point);
+        $this->point3->setPoints(101.0, 1.0);
+
+        $this->point4 = Factory::make(GeoJsonType::Point);
+        $this->point4->setPoints(100.0, 0.0);
     }
 }

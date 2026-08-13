@@ -15,11 +15,11 @@ The inspiration for this is another project I am working on [Tile38 PHP Client](
 
 For more information about GeoJSON objects, please see [This Website](https://terraformer-js.github.io/glossary/) or the official [RFC 7946](https://datatracker.ietf.org/doc/html/rfc7946)
 
-The initial release of this library, will provide the functionality for use within the Tile38 project, the subsequent release will be to ensure full implementation of the rfc, and then the 3rd release will provide unserialisation of GeoJSON data, back into objects.
+The initial release of this library provides the functionality for use within the Tile38 project, this release ensures full implementation of the RFC 7946 serialization, and a future release will provide unserialisation of GeoJSON data, back into objects.
 
 ## Installation
 
-Please use composer to pull in the package `composer require ronappleton/php-geojson` please note that this library requires php ^8.1, I may at some point release for php ^7.4 but for the moment it is ^8.1, if anyone would like to branch this to other php versions, I will assist.
+Install with composer: `composer require ronappleton/php-geojson`. This library requires PHP >= 8.1.
 
 ## Usage
 
@@ -44,13 +44,100 @@ It also provides a factory for convenience, this is `RonAppleton\GeoJson\Objects
 Using the factory provides a simple interface for creating the objects:
 
 ```php
+use RonAppleton\GeoJson\Enums\GeoJsonType;
+use RonAppleton\GeoJson\Objects\Factory;
+
 $point = Factory::make(GeoJsonType::Point);
+$point->setPoints(100.0, 0.0);
 ```
 
-And when making LineStrings for example, you can also pass a count as the second parameter to the factory:
+And when making several objects of the same type, you can pass a count as the second parameter to the factory:
 
 ```php
-[$point, $point2, $point3, $point4] = Factory::make(Point::class, 4);
+[$point, $point2, $point3, $point4] = Factory::make(GeoJsonType::Point, 4);
 ```
 
 All objects provide a `toArray()` method and a `toJson()` method, when making objects of combined types, like Polygons etc, the toArray and toJson methods cascade through all objects so they will all be converted automatically.
+
+### Point
+
+`Point` is used as the position primitive throughout the library, so `toArray()` returns a bare position `[longitude, latitude, ?altitude]` rather than a full GeoJSON object:
+
+```php
+$point = Factory::make(GeoJsonType::Point);
+$point->setPoints(100.0, 0.0);
+$point->setAltitude(10.0);
+
+$point->toArray(); // [100.0, 0.0, 10.0]
+$point->toJson();  // [100,0,10]
+```
+
+### LineString
+
+```php
+$lineString = Factory::make(GeoJsonType::LineString);
+$lineString->addPoints($point, $point2);
+
+$lineString->toArray(); // ['type' => 'LineString', 'coordinates' => [[...], [...]]]
+```
+
+### Polygon
+
+```php
+$polygon = Factory::make(GeoJsonType::Polygon);
+$polygon->setExteriorRing($point, $point2, $point3, $point);
+$polygon->addInteriorRing($holePoint, $holePoint2, $holePoint3, $holePoint);
+
+$polygon->toArray(); // ['type' => 'Polygon', 'coordinates' => [[...], [...]]]
+```
+
+Rings must contain at least four positions and must be closed (the first and last positions identical).
+
+### Feature
+
+```php
+$feature = Factory::make(GeoJsonType::Feature);
+$feature->setId('0001');
+$feature->setGeometry($lineString);
+$feature->setProperty('name', 'somewhere');
+
+$feature->toArray(); // ['type' => 'Feature', 'id' => '0001', 'geometry' => [...], 'properties' => [...]]
+```
+
+The geometry must be a geometry object (e.g. a `LineString`, `Polygon` or `GeometryCollection`) or `null`.
+
+### FeatureCollection
+
+```php
+$collection = Factory::make(GeoJsonType::FeatureCollection);
+$collection->addFeatures($feature, $feature2);
+
+$collection->toArray(); // ['type' => 'FeatureCollection', 'features' => [...]]
+```
+
+### BoundingBox
+
+```php
+$boundingBox = Factory::make(GeoJsonType::BoundingBox);
+$boundingBox->setPoints($southwest, $northeast);
+
+$feature->setBoundingBox($boundingBox);
+$feature->toArray(); // includes 'bbox' => [west, south, east, north]
+```
+
+For three-dimensional data pass a minimum and maximum altitude:
+
+```php
+$boundingBox->setAltitudes(-4.0, 6.0);
+$boundingBox->toArray(); // [west, south, -4.0, east, north, 6.0]
+```
+
+## Testing
+
+The library ships with a PHPUnit suite and a code style ruleset (PHP_CodeSniffer):
+
+```bash
+composer test     # run the test suite
+composer cs       # check code style
+composer cs:fix   # automatically fix code style
+```

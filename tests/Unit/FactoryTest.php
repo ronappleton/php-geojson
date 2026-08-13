@@ -6,6 +6,7 @@ namespace RonAppleton\GeoJson\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
 use RonAppleton\GeoJson\Enums\GeoJsonType;
+use RonAppleton\GeoJson\Objects\BoundingBox;
 use RonAppleton\GeoJson\Objects\Factory;
 use RonAppleton\GeoJson\Objects\Factory as ObjectFactory;
 use RonAppleton\GeoJson\Objects\Feature;
@@ -23,8 +24,15 @@ class FactoryTest extends TestCase
     public function testMakeFeature(): void
     {
         $feature = ObjectFactory::make(GeoJsonType::Feature);
-        
+
         $this->assertInstanceOf(Feature::class, $feature);
+    }
+
+    public function testMakeBoundingBox(): void
+    {
+        $boundingBox = ObjectFactory::make(GeoJsonType::BoundingBox);
+
+        $this->assertInstanceOf(BoundingBox::class, $boundingBox);
     }
     
     public function testMakeFeatureCollection(): void

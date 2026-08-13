@@ -9,4 +9,9 @@ use RonAppleton\GeoJson\Enums\GeoJsonType;
 interface GeoJsonObject
 {
     public function getType(): GeoJsonType;
+
+    /**
+     * @return array<int|string, mixed>
+     */
+    public function toArray(): array;
 }

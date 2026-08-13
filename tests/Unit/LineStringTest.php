@@ -17,97 +17,79 @@ class LineStringTest extends TestCase
     public function testAddPoint(): void
     {
         $point = Factory::make(GeoJsonType::Point);
+        $point->setPoints(123.456, 45.678);
 
-        $this->assertInstanceOf(Point::class, $point);
-        
-        $point->setPoints(123.456, 456.789);
-        
         $linestring = Factory::make(GeoJsonType::LineString);
-        
-        $this->assertInstanceOf(LineString::class, $linestring);
-        
         $linestring->addPoint($point);
-        
-        $points = $linestring->getPoints();
-        
-        $this->assertIsArray($points);
-        $this->assertCount(1, $points);
+
+        $this->assertInstanceOf(LineString::class, $linestring);
+        $this->assertCount(1, $linestring->getPoints());
     }
-    
+
     public function testAddPoints(): void
     {
         [$point, $point2] = Factory::make(GeoJsonType::Point, 2);
 
-        $this->assertInstanceOf(Point::class, $point);
-        $this->assertInstanceOf(Point::class, $point2);
-        
-        $point->setPoints(123.456, 456.789);
-        $point2->setPoints(789.012, 345.678);
+        $point->setPoints(123.456, 45.678);
+        $point2->setPoints(- 45.678, - 12.345);
 
         $linestring = Factory::make(GeoJsonType::LineString);
-
-        $this->assertInstanceOf(LineString::class, $linestring);
-
         $linestring->addPoints($point, $point2);
 
-        $points = $linestring->getPoints();
-
-        $this->assertIsArray($points);
-        $this->assertCount(2, $points);
+        $this->assertCount(2, $linestring->getPoints());
     }
 
     public function testGetPoints(): void
     {
         [$point, $point2] = Factory::make(GeoJsonType::Point, 2);
 
-        $this->assertInstanceOf(Point::class, $point);
-        $this->assertInstanceOf(Point::class, $point2);
-        
-        $point->setPoints(123.456, 456.789);
-        $point2->setPoints(789.012, 012.345);
+        $point->setPoints(123.456, 45.678);
+        $point2->setPoints(- 45.678, - 12.345);
 
         $linestring = Factory::make(GeoJsonType::LineString);
-
-        $this->assertInstanceOf(LineString::class, $linestring);
-
         $linestring->addPoints($point, $point2);
 
         $points = $linestring->getPoints();
 
-        $this->assertIsArray($points);
-        $this->assertCount(2, $points);
-        $this->assertInstanceOf(Point::class, $points[0]);
-        $this->assertInstanceOf(Point::class, $points[1]);
         $this->assertSame(123.456, $points[0]->getLongitude());
-        $this->assertSame(456.789, $points[0]->getLatitude());
-        $this->assertSame(789.012, $points[1]->getLongitude());
-        $this->assertSame(012.345, $points[1]->getLatitude());
+        $this->assertSame(45.678, $points[0]->getLatitude());
+        $this->assertSame(- 45.678, $points[1]->getLongitude());
+        $this->assertSame(- 12.345, $points[1]->getLatitude());
     }
-    
-    public function testToArray(): void
+
+    public function testCoordinates(): void
     {
-        $point = Factory::make(GeoJsonType::Point);
+        [$point, $point2] = Factory::make(GeoJsonType::Point, 2);
 
-        $this->assertInstanceOf(Point::class, $point);
-
-        $point->setPoints(123.456, 456.789);
-
-        $point2 = Factory::make(GeoJsonType::Point);
-
-        $this->assertInstanceOf(Point::class, $point2);
-
-        $point2->setPoints(789.012, 345.678);
+        $point->setPoints(123.456, 45.678);
+        $point2->setPoints(- 45.678, - 12.345);
 
         $linestring = Factory::make(GeoJsonType::LineString);
-
-        $this->assertInstanceOf(LineString::class, $linestring);
-
         $linestring->addPoints($point, $point2);
-        
-        $array = $linestring->toArray();
-        
-        $this->assertIsArray($array);
-        $this->assertSame([[123.456, 456.789], [789.012, 345.678]], $array);
+
+        $this->assertSame(
+            [[123.456, 45.678], [- 45.678, - 12.345]],
+            $linestring->coordinates(),
+        );
+    }
+
+    public function testToArray(): void
+    {
+        [$point, $point2] = Factory::make(GeoJsonType::Point, 2);
+
+        $point->setPoints(123.456, 45.678);
+        $point2->setPoints(- 45.678, - 12.345);
+
+        $linestring = Factory::make(GeoJsonType::LineString);
+        $linestring->addPoints($point, $point2);
+
+        $this->assertSame(
+            [
+                'type' => 'LineString',
+                'coordinates' => [[123.456, 45.678], [- 45.678, - 12.345]],
+            ],
+            $linestring->toArray(),
+        );
     }
 
     /**
@@ -117,38 +99,29 @@ class LineStringTest extends TestCase
     {
         [$point, $point2] = Factory::make(GeoJsonType::Point, 2);
 
-        $this->assertInstanceOf(Point::class, $point);
-        $this->assertInstanceOf(Point::class, $point2);
-
-        $point->setPoints(123.456, 456.789);
-        $point2->setPoints(789.012, 345.678);
+        $point->setPoints(123.456, 45.678);
+        $point2->setPoints(- 45.678, - 12.345);
 
         $linestring = Factory::make(GeoJsonType::LineString);
-
-        $this->assertInstanceOf(LineString::class, $linestring);
-
         $linestring->addPoints($point, $point2);
-        
-        $json = $linestring->toJson();
-        $this->assertSame('[[123.456,456.789],[789.012,345.678]]', $json);
+
+        $this->assertSame(
+            '{"type":"LineString","coordinates":[[123.456,45.678],[-45.678,-12.345]]}',
+            $linestring->toJson(),
+        );
     }
 
     public function testNotEnoughPoints(): void
     {
         $point = Factory::make(GeoJsonType::Point);
-
-        $this->assertInstanceOf(Point::class, $point);
-
-        $point->setPoints(123.456, 456.789);
+        $point->setPoints(123.456, 45.678);
 
         $linestring = Factory::make(GeoJsonType::LineString);
-
-        $this->assertInstanceOf(LineString::class, $linestring);
-        
         $linestring->addPoint($point);
 
         $this->expectException(NotEnoughPoints::class);
-        $this->expectExceptionMessage("You have not provided enough points, 1 provided, 2 required.");
+        $this->expectExceptionMessage('You have not provided enough points, 1 provided, 2 required.');
+
         $linestring->toArray();
     }
 }

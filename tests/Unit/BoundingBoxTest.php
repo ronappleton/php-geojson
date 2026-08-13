@@ -7,149 +7,155 @@ namespace RonAppleton\GeoJson\Tests\Unit;
 use JsonException;
 use PHPUnit\Framework\TestCase;
 use RonAppleton\GeoJson\Enums\GeoJsonType;
+use RonAppleton\GeoJson\Exceptions\BoundingBox as BoundingBoxException;
 use RonAppleton\GeoJson\Objects\BoundingBox;
 use RonAppleton\GeoJson\Objects\Factory;
 use RonAppleton\GeoJson\Objects\Point;
-use RonAppleton\GeoJson\Exceptions\BoundingBox as BoundingBoxException;
 
 class BoundingBoxTest extends TestCase
 {
-    private BoundingBox $boundingBox;
-    private Point $point;
-    private Point $point2;
-    
-    protected function setUp(): void
-    {
-        parent::setUp();
+    private Point $southwest;
 
-        $this->boundingBox = Factory::make(GeoJsonType::BoundingBox);
-        [$this->point, $this->point2]= Factory::make(GeoJsonType::Point, 2);
-        
-    }
+    private Point $northeast;
 
     public function testSetPoints(): void
     {
-        $this->point->setPoints(123.456, 456.789);
-        $this->point2->setPoints(789.012, 012.345);
-        
-        $this->boundingBox->setPoints($this->point, $this->point2);
-        
-        $points = $this->boundingBox->getPoints();
-        
-        $this->assertIsArray($points);
-        $this->assertInstanceOf(Point::class, $points[0]);
-        $this->assertInstanceOf(Point::class, $points[1]);
+        $boundingBox = Factory::make(GeoJsonType::BoundingBox);
+        $boundingBox->setPoints($this->southwest, $this->northeast);
+
+        $this->assertInstanceOf(BoundingBox::class, $boundingBox);
+        $this->assertCount(2, $boundingBox->getPoints());
     }
-    
-    public function testCannotSetPoints(): void
+
+    public function testCannotSetPointsTwice(): void
     {
-        $this->point->setPoints(123.456, 456.789);
-        $this->point2->setPoints(789.012, 012.345);
-        
-        $this->boundingBox->setPoints($this->point, $this->point2);
+        $boundingBox = Factory::make(GeoJsonType::BoundingBox);
+        $boundingBox->setPoints($this->southwest, $this->northeast);
 
         $this->expectException(BoundingBoxException::class);
-        $this->expectExceptionMessage('Points are already set.');
-        
-        $this->boundingBox->setPoints($this->point, $this->point2);
+        $this->expectExceptionMessage('The bounding box points are already set.');
+
+        $boundingBox->setPoints($this->southwest, $this->northeast);
     }
-    
-    public function testGetPoints(): void
+
+    public function testInvalidOrder(): void
     {
-        $this->point->setPoints(123.456, 456.789);
-        $this->point2->setPoints(789.012, 012.345);
-        
-        $this->boundingBox->setPoints($this->point, $this->point2);
-        
-        $points = $this->boundingBox->getPoints();
-        
-        $this->assertIsArray($points);
-        $this->assertInstanceOf(Point::class, $points[0]);
-        $this->assertInstanceOf(Point::class, $points[1]);
-    }
-    
-    public function testCannotGetPoints(): void
-    {
+        $boundingBox = Factory::make(GeoJsonType::BoundingBox);
+
         $this->expectException(BoundingBoxException::class);
-        $this->expectExceptionMessage('Points are not set.');
-        
-        $this->boundingBox->getPoints();
+        $this->expectExceptionMessage('The southwest corner must not be greater than the northeast corner.');
+
+        $boundingBox->setPoints($this->northeast, $this->southwest);
     }
-    
+
     public function testSetAltitudes(): void
     {
-        $this->boundingBox->setAltitudes(100.0, 0.0);
-        
-        $array = $this->boundingBox->getAltitudes();
+        $boundingBox = Factory::make(GeoJsonType::BoundingBox);
+        $boundingBox->setAltitudes(- 4.0, 6.0);
 
-        $this->assertIsArray($array);
+        $this->assertSame(
+            ['maximum_altitude' => 6.0, 'minimum_altitude' => - 4.0],
+            $boundingBox->getAltitudes(),
+        );
     }
-    
-    public function testCannotSetAltitudes(): void
+
+    public function testInvalidAltitudeOrder(): void
     {
-        $this->boundingBox->setAltitudes(100.0, 0.0);
-        
+        $boundingBox = Factory::make(GeoJsonType::BoundingBox);
+
         $this->expectException(BoundingBoxException::class);
-        $this->expectExceptionMessage('The bounding box\'s altitudes are already set.');
+        $this->expectExceptionMessage('The minimum altitude must not be greater than the maximum altitude.');
 
-        $this->boundingBox->setAltitudes(100.0, 0.0);
+        $boundingBox->setAltitudes(6.0, - 4.0);
     }
-    
-    public function testGetAltitudes(): void
-    {
-        $this->boundingBox->setAltitudes(100.0, 0.0);
 
-        $array = $this->boundingBox->getAltitudes();
-
-        $this->assertIsArray($array);
-        $this->assertCount(2, $array);
-        $this->assertSame(100.0, $array['minimum_altitude']);
-        $this->assertSame(0.0, $array['maximum_altitude']);
-    }
-    
-    public function testCannotGetAltitudes(): void
+    public function testSouthwestLongitudeEqualToNortheastRejected(): void
     {
+        $northeast = Factory::make(GeoJsonType::Point);
+        $northeast->setPoints(100.0, 1.0);
+
+        $boundingBox = Factory::make(GeoJsonType::BoundingBox);
+
         $this->expectException(BoundingBoxException::class);
-        $this->expectExceptionMessage('The bounding box\'s altitudes are not set.');
-        
-        $this->boundingBox->getAltitudes();
+        $this->expectExceptionMessage('The southwest corner must not be greater than the northeast corner.');
+
+        $boundingBox->setPoints($this->southwest, $northeast);
     }
 
-    public function testToArray2DBBox(): void
+    public function testSouthwestLatitudeEqualToNortheastRejected(): void
     {
-        $this->point->setPoints(123.456, 456.789);
-        $this->point2->setPoints(789.012, 012.345);
+        $northeast = Factory::make(GeoJsonType::Point);
+        $northeast->setPoints(101.0, 0.0);
 
-        $this->boundingBox->setPoints($this->point, $this->point2);
-        
-        $array = $this->boundingBox->toArray();
-        
-        $this->assertIsArray($array);
-        $this->assertCount(4, $array);
-        $this->assertSame([123.456, 456.789, 789.012, 012.345], $array);
-    }
-    
-    public function testToArray2DBBoxExcepts(): void
-    {
+        $boundingBox = Factory::make(GeoJsonType::BoundingBox);
+
         $this->expectException(BoundingBoxException::class);
-        $this->expectExceptionMessage('The bounding box\'s Points are not set.');
+        $this->expectExceptionMessage('The southwest corner must not be greater than the northeast corner.');
 
-        $array = $this->boundingBox->toArray();
+        $boundingBox->setPoints($this->southwest, $northeast);
     }
-    
-    public function testToArray3DBBox(): void
+
+    public function testJustInsideBoundsAccepted(): void
     {
-        $this->point->setPoints(123.456, 456.789);
-        $this->point2->setPoints(789.012, 012.345);
+        $northeast = Factory::make(GeoJsonType::Point);
+        $northeast->setPoints(100.0001, 0.0001);
 
-        $this->boundingBox->setPoints($this->point, $this->point2);
-        $this->boundingBox->setAltitudes(100, 0.0);
+        $boundingBox = Factory::make(GeoJsonType::BoundingBox);
+        $boundingBox->setPoints($this->southwest, $northeast);
 
-        $array = $this->boundingBox->toArray();
+        $this->assertSame([100.0, 0.0, 100.0001, 0.0001], $boundingBox->toArray());
+    }
 
-        $this->assertIsArray($array);
-        $this->assertCount(6, $array);
-        $this->assertSame([123.456, 456.789, 100.0, 789.012, 012.345, 0.0], $array);
+    public function testEqualAltitudesRejected(): void
+    {
+        $boundingBox = Factory::make(GeoJsonType::BoundingBox);
+
+        $this->expectException(BoundingBoxException::class);
+        $this->expectExceptionMessage('The minimum altitude must not be greater than the maximum altitude.');
+
+        $boundingBox->setAltitudes(6.0, 6.0);
+    }
+
+    public function testJustInsideAltitudesAccepted(): void
+    {
+        $boundingBox = Factory::make(GeoJsonType::BoundingBox);
+        $boundingBox->setAltitudes(5.9999, 6.0);
+
+        $this->assertSame(
+            ['maximum_altitude' => 6.0, 'minimum_altitude' => 5.9999],
+            $boundingBox->getAltitudes(),
+        );
+    }
+
+    public function testCannotGetPointsWhenNotSet(): void
+    {
+        $boundingBox = Factory::make(GeoJsonType::BoundingBox);
+
+        $this->expectException(BoundingBoxException::class);
+        $this->expectExceptionMessage('The bounding box points are not set.');
+
+        $boundingBox->getPoints();
+    }
+
+    public function testCannotGetAltitudesWhenNotSet(): void
+    {
+        $boundingBox = Factory::make(GeoJsonType::BoundingBox);
+
+        $this->expectException(BoundingBoxException::class);
+        $this->expectExceptionMessage('The bounding box altitudes are not set.');
+
+        $boundingBox->getAltitudes();
+    }
+
+    public function testCannotSetAltitudesTwice(): void
+    {
+        $boundingBox = Factory::make(GeoJsonType::BoundingBox);
+        $boundingBox->setAltitudes(- 4.0, 6.0);
+
+        $this->expectException(BoundingBoxException::class);
+        $this->expectExceptionMessage('The bounding box altitudes are already set.');
+
+        $boundingBox->setAltitudes(- 2.0, 8.0);
     }
 
     /**
@@ -157,14 +163,45 @@ class BoundingBoxTest extends TestCase
      */
     public function testToJson(): void
     {
-        $this->point->setPoints(123.456, 456.789);
-        $this->point2->setPoints(789.012, 012.345);
+        $boundingBox = Factory::make(GeoJsonType::BoundingBox);
+        $boundingBox->setPoints($this->southwest, $this->northeast);
 
-        $this->boundingBox->setPoints($this->point, $this->point2);
-        
-        $json = $this->boundingBox->toJson();
-        
-        $this->assertJson($json);
-        $this->assertSame('[123.456,456.789,789.012,12.345]', $json);
+        $this->assertJsonStringEqualsJsonString('[100.0,0.0,101.0,1.0]', $boundingBox->toJson());
+    }
+
+    public function testToArray(): void
+    {
+        $boundingBox = Factory::make(GeoJsonType::BoundingBox);
+        $boundingBox->setPoints($this->southwest, $this->northeast);
+
+        $this->assertSame([100.0, 0.0, 101.0, 1.0], $boundingBox->toArray());
+    }
+
+    public function testToArrayWithAltitudes(): void
+    {
+        $boundingBox = Factory::make(GeoJsonType::BoundingBox);
+        $boundingBox->setPoints($this->southwest, $this->northeast);
+        $boundingBox->setAltitudes(- 4.0, 6.0);
+
+        $this->assertSame([100.0, 0.0, - 4.0, 101.0, 1.0, 6.0], $boundingBox->toArray());
+    }
+
+    public function testCannotToArrayWithoutPoints(): void
+    {
+        $boundingBox = Factory::make(GeoJsonType::BoundingBox);
+
+        $this->expectException(BoundingBoxException::class);
+        $this->expectExceptionMessage('The bounding box points are not set.');
+
+        $boundingBox->toArray();
+    }
+
+    protected function setUp(): void
+    {
+        $this->southwest = Factory::make(GeoJsonType::Point);
+        $this->southwest->setPoints(100.0, 0.0);
+
+        $this->northeast = Factory::make(GeoJsonType::Point);
+        $this->northeast->setPoints(101.0, 1.0);
     }
 }

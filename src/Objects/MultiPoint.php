@@ -8,15 +8,12 @@ use RonAppleton\GeoJson\Abstracts\GeoJsonObject;
 
 use function array_map;
 
-/**
- * @phpcs:disable SlevomatCodingStandard.Commenting.RequireOneLinePropertyDocComment.MultiLinePropertyComment
- */
 class MultiPoint extends GeoJsonObject
 {
     /**
      * @var array<int, Point>
      */
-    private array $points;
+    private array $points = [];
 
     /**
      * @return array<int, Point>
@@ -25,19 +22,27 @@ class MultiPoint extends GeoJsonObject
     {
         return $this->points;
     }
-    
-    public function addPoint(Point $point): MultiPoint
+
+    public function addPoint(Point $point): static
     {
         $this->points[] = $point;
-        
+
         return $this;
     }
 
     /**
-     * @return array<int, mixed>
+     * @return array<int, array<int, float>>
+     */
+    public function coordinates(): array
+    {
+        return array_map(static fn (Point $point) => $point->toArray(), $this->points);
+    }
+
+    /**
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {
-        return array_map(static fn (Point $point) => $point->toArray(), $this->points);
+        return $this->geometryArray($this->coordinates());
     }
 }

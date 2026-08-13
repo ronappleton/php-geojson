@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace RonAppleton\GeoJson\Exceptions;
 
-use RonAppleton\GeoJson\Enums\BoundingBoxExceptionType;
+use RonAppleton\GeoJson\Enums\GeometryCollectionExceptionType;
 use RuntimeException;
 use Throwable;
 
 use function sprintf;
 
-class BoundingBox extends RuntimeException
+class GeometryCollection extends RuntimeException
 {
     public function __construct(
-        BoundingBoxExceptionType $exceptionType,
+        GeometryCollectionExceptionType $exceptionType,
         string $context = '',
         int $code = 0,
         ?Throwable $previous = null,

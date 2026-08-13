@@ -2,4 +2,5 @@
 /.idea/
 /coverage/
 .phpunit.result.cache
+.phpunit.cache/
 codacy-coverage-reporter

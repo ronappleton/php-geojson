@@ -5,50 +5,89 @@ declare(strict_types=1);
 namespace RonAppleton\GeoJson\Objects;
 
 use RonAppleton\GeoJson\Abstracts\GeoJsonObject;
-
 use RonAppleton\GeoJson\Enums\PolygonExceptionType;
+use RonAppleton\GeoJson\Exceptions\NotEnoughPoints;
 use RonAppleton\GeoJson\Exceptions\Polygon as PolygonException;
 
-use function array_merge;
 use function array_map;
+use function count;
 
-/**
- * @phpcs:disable SlevomatCodingStandard.Commenting.RequireOneLinePropertyDocComment.MultiLinePropertyComment
- */
 class Polygon extends GeoJsonObject
 {
     /**
-     * @var array<int, Point>
+     * @var array<int, array<int, Point>>
      */
-    private array $points;
+    private array $rings = [];
 
-    /**
-     * @return array<int, Point>
-     */
-    public function getPoints(): array
+    public function setExteriorRing(Point ... $points): static
     {
-        return $this->points ?? throw new PolygonException(PolygonExceptionType::PointsNotSet);
+        if ($this->rings !== []) {
+            throw new PolygonException(PolygonExceptionType::ExteriorRingSet);
+        }
+
+        $this->rings[] = $points;
+
+        return $this;
     }
 
-    /**
-     * @param array<int, Point> $points
-     */
-    public function setPoints(Point ... $points): Polygon
+    public function addInteriorRing(Point ... $points): static
     {
-        if (isset($this->points)) {
-            throw new PolygonException(PolygonExceptionType::PointsSet);
+        if ($this->rings === []) {
+            throw new PolygonException(PolygonExceptionType::ExteriorRingNotSet);
         }
-        
-        $this->points = array_merge($this->points ?? [], $points);
-        
+
+        $this->rings[] = $points;
+
         return $this;
     }
 
     /**
-     * @return array<int, mixed>
+     * @return array<int, array<int, Point>>
+     */
+    public function getRings(): array
+    {
+        return $this->rings;
+    }
+
+    /**
+     * @return array<int, array<int, array<int, float>>>
+     */
+    public function coordinates(): array
+    {
+        $coordinates = [];
+
+        foreach ($this->rings as $ring) {
+            $coordinates[] = $this->ringCoordinates($ring);
+        }
+
+        return $coordinates;
+    }
+
+    /**
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {
-        return array_map(static fn (Point $point) => $point->toArray(), $this->points);
+        return $this->geometryArray($this->coordinates());
+    }
+
+    /**
+     * @param array<int, Point> $ring
+     *
+     * @return array<int, array<int, float>>
+     */
+    private function ringCoordinates(array $ring): array
+    {
+        $coordinates = array_map(static fn (Point $point) => $point->toArray(), $ring);
+
+        if (count($coordinates) < 4) {
+            throw new NotEnoughPoints(count($coordinates), 4);
+        }
+
+        if ($coordinates[0] !== $coordinates[count($coordinates) - 1]) {
+            throw new PolygonException(PolygonExceptionType::RingNotClosed);
+        }
+
+        return $coordinates;
     }
 }

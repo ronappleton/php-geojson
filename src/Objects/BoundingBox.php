@@ -8,90 +8,99 @@ use RonAppleton\GeoJson\Abstracts\GeoJsonObject;
 use RonAppleton\GeoJson\Enums\BoundingBoxExceptionType;
 use RonAppleton\GeoJson\Exceptions\BoundingBox as BoundingBoxException;
 
-use function array_map;
-use function array_merge;
+use function array_splice;
 
-/**
- * @phpcs:disable SlevomatCodingStandard.Commenting.RequireOneLinePropertyDocComment.MultiLinePropertyComment
- */
 class BoundingBox extends GeoJsonObject
 {
-    /**
-     * @var array<int, float>
-     */
-    private array $points;
-    
-    private float $minimumAltitude;
-    
-    private float $maximumAltitude;
+    private ?Point $southwest = null;
 
-    /**
-     * @return array<int, float>
-     */
-    public function getPoints(): array
+    private ?Point $northeast = null;
+
+    private ?float $minimumAltitude = null;
+
+    private ?float $maximumAltitude = null;
+
+    public function setPoints(Point $southwest, Point $northeast): static
     {
-        return $this->points ?? throw new BoundingBoxException(BoundingBoxExceptionType::PointsNotSet);
-    }
-    
-    public function setPoints(Point $southwest, Point $northeast,): BoundingBox 
-    {
-        if (isset($this->points)) {
+        if ($this->southwest !== null) {
             throw new BoundingBoxException(BoundingBoxExceptionType::PointsSet);
         }
-        
-        $this->points = [$southwest, $northeast];
-        
+
+        if (
+            $southwest->getLongitude() >= $northeast->getLongitude()
+            || $southwest->getLatitude() >= $northeast->getLatitude()
+        ) {
+            throw new BoundingBoxException(BoundingBoxExceptionType::InvalidOrder);
+        }
+
+        $this->southwest = $southwest;
+        $this->northeast = $northeast;
+
         return $this;
     }
 
     /**
-     * @return array<string, float>
+     * @return array<int, Point>
+     */
+    public function getPoints(): array
+    {
+        return [
+            $this->southwest ?? throw new BoundingBoxException(BoundingBoxExceptionType::PointsNotSet),
+            $this->northeast ?? throw new BoundingBoxException(BoundingBoxExceptionType::PointsNotSet),
+        ];
+    }
+
+    public function setAltitudes(float $minimumAltitude, float $maximumAltitude): static
+    {
+        if ($this->minimumAltitude !== null) {
+            throw new BoundingBoxException(BoundingBoxExceptionType::AltitudesSet);
+        }
+
+        if ($minimumAltitude >= $maximumAltitude) {
+            throw new BoundingBoxException(BoundingBoxExceptionType::InvalidAltitudeOrder);
+        }
+
+        $this->minimumAltitude = $minimumAltitude;
+        $this->maximumAltitude = $maximumAltitude;
+
+        return $this;
+    }
+
+    /**
+     * @return array{minimum_altitude: float, maximum_altitude: float}
      */
     public function getAltitudes(): array
     {
         return [
-            'minimum_altitude' => $this->minimumAltitude ?? throw new BoundingBoxException(BoundingBoxExceptionType::AltitudesNotSet),
-            'maximum_altitude' => $this->maximumAltitude ?? throw new BoundingBoxException(BoundingBoxExceptionType::AltitudesNotSet),
+            'maximum_altitude' => $this->maximumAltitude ?? throw new BoundingBoxException(
+                BoundingBoxExceptionType::AltitudesNotSet,
+            ),
+            'minimum_altitude' => $this->minimumAltitude ?? throw new BoundingBoxException(
+                BoundingBoxExceptionType::AltitudesNotSet,
+            ),
         ];
-    }
-    
-    public function setAltitudes(float $minimumAltitude, float $maximumAltitude): BoundingBox
-    {
-        if (isset($this->minimumAltitude, $this->maximumAltitude)) {
-            throw new BoundingBoxException(BoundingBoxExceptionType::AltitudesSet);
-        }
-        
-        $this->minimumAltitude = $minimumAltitude;
-        $this->maximumAltitude = $maximumAltitude;
-        
-        return $this;
     }
 
     /**
-     * @return array<int, mixed>
+     * @return array<int, float>
      */
     public function toArray(): array
     {
-        if (!isset($this->points)) {
-            throw new BoundingBoxException(BoundingBoxExceptionType::PointsNotSet);
-        }
-        
-        $pointsMap = array_map(static fn (Point $point) => $point->toArray(), $this->points);
-        
-        return $this->spliceInAltitudes(array_merge(... $pointsMap));
-    }
+        $southwest = $this->southwest ?? throw new BoundingBoxException(BoundingBoxExceptionType::PointsNotSet);
+        $northeast = $this->northeast ?? throw new BoundingBoxException(BoundingBoxExceptionType::PointsNotSet);
 
-    /**
-     * @param array<int, float> $points
-     * @return array<int, float>
-     */
-    private function spliceInAltitudes(array $points): array
-    {
-        if (isset($this->minimumAltitude, $this->maximumAltitude)) {
-            array_splice($points, 2, 0, $this->minimumAltitude);
-            $points[] = $this->maximumAltitude;
+        $bbox = [
+            $southwest->getLongitude(),
+            $southwest->getLatitude(),
+            $northeast->getLongitude(),
+            $northeast->getLatitude(),
+        ];
+
+        if ($this->minimumAltitude !== null && $this->maximumAltitude !== null) {
+            array_splice($bbox, 2, 0, $this->minimumAltitude);
+            $bbox[] = $this->maximumAltitude;
         }
-        
-        return $points;
+
+        return $bbox;
     }
 }

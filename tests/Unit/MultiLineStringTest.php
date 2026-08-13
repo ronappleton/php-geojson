@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace RonAppleton\GeoJson\Tests\Unit;
 
-use JsonException;
 use PHPUnit\Framework\TestCase;
 use RonAppleton\GeoJson\Enums\GeoJsonType;
 use RonAppleton\GeoJson\Objects\Factory;
@@ -12,272 +11,60 @@ use RonAppleton\GeoJson\Objects\LineString;
 use RonAppleton\GeoJson\Objects\MultiLineString;
 use RonAppleton\GeoJson\Objects\Point;
 
-use function json_encode;
-
-use const JSON_THROW_ON_ERROR;
-
-/**
- * @phpcs:disable SlevomatCodingStandard.Files.FunctionLength.FunctionLength
- * @phpcs:disable SlevomatCodingStandard.Functions.FunctionLength.FunctionLength
- */
 class MultiLineStringTest extends TestCase
 {
-    public function testSetAndGet(): void
+    public function testSetLineStrings(): void
     {
-        [$lineString, $lineString2, $lineString3] = Factory::make(GeoJsonType::LineString, 3);
-        
-        $this->assertInstanceOf(LineString::class, $lineString);
-        $this->assertInstanceOf(LineString::class, $lineString2);
-        $this->assertInstanceOf(LineString::class, $lineString3);
-        
-        [$lineStringPoint, $lineStringPoint2, $lineStringPoint3, $lineStringPoint4, $lineStringPoint5] =
-            Factory::make(GeoJsonType::Point, 5);
-        
-        $this->assertInstanceOf(Point::class, $lineStringPoint);
-        $this->assertInstanceOf(Point::class, $lineStringPoint2);
-        $this->assertInstanceOf(Point::class, $lineStringPoint3);
-        $this->assertInstanceOf(Point::class, $lineStringPoint4);
-        $this->assertInstanceOf(Point::class, $lineStringPoint5);
-        
-        $lineStringPoint->setPoints(- 101.5, 39.662);
-        $lineStringPoint2->setPoints(- 101.75, 39.2415);
-        $lineStringPoint3->setPoints(- 101.23, 39.2415);
-        $lineStringPoint4->setPoints(- 101.749, 39.7984);
-        $lineStringPoint5->setPoints(- 101.5, 39.011);
-        
-        $lineString->addPoints(
-            $lineStringPoint,
-            $lineStringPoint2,
-            $lineStringPoint3,
-            $lineStringPoint4,
-            $lineStringPoint5,
-        );
-        
-        [$lineString2Point, $lineString2Point2, $lineString2Point3] = Factory::make(GeoJsonType::Point, 3);
-        
-        $this->assertInstanceOf(Point::class, $lineString2Point);
-        $this->assertInstanceOf(Point::class, $lineString2Point2);
-        $this->assertInstanceOf(Point::class, $lineString2Point3);
-        
-        $lineString2Point->setPoints(- 99.23, 38.6605);
-        $lineString2Point2->setPoints(- 99.56, 38.727);
-        $lineString2Point3->setPoints(- 99.25, 38.018);
-        
-        $lineString2->addPoints($lineString2Point, $lineString2Point2, $lineString2Point3);
-        
-        [$lineString3Point, $lineString3Point2, $lineString3Point3, $lineString3Point4] =
-            Factory::make(GeoJsonType::Point, 4);
-        
-        $this->assertInstanceOf(Point::class, $lineString3Point);
-        $this->assertInstanceOf(Point::class, $lineString3Point2);
-        $this->assertInstanceOf(Point::class, $lineString3Point3);
-        $this->assertInstanceOf(Point::class, $lineString3Point4);
-        
-        $lineString3Point->setPoints(- 98.499, 38.913);
-        $lineString3Point2->setPoints(- 98.499, 38.913);
-        $lineString3Point3->setPoints(- 98.38, 38.15);
-        $lineString3Point4->setPoints(- 97.5, 38.629);
-        
-        $lineString3->addPoints($lineString3Point, $lineString3Point2, $lineString3Point3, $lineString3Point4);
-        
-        $multiLineString = Factory::make(GeoJsonType::MultiLineString);
-        
-        $this->assertInstanceOf(MultiLineString::class, $multiLineString);
-        
-        $multiLineString->setLineStrings($lineString, $lineString2, $lineString3);
-        
-        $array = $multiLineString->getLineStrings();
-        $this->assertIsArray($array);
-        $this->assertCount(3, $array);
-    }
+        [$point, $point2, $point3, $point4] = Factory::make(GeoJsonType::Point, 4);
 
-    public function testToArray(): void
-    {
-        [$lineString, $lineString2, $lineString3] = Factory::make(GeoJsonType::LineString, 3);
+        $point->setPoints(100.0, 0.0);
+        $point2->setPoints(101.0, 1.0);
+        $point3->setPoints(102.0, 0.0);
+        $point4->setPoints(103.0, 1.0);
 
-        $this->assertInstanceOf(LineString::class, $lineString);
-        $this->assertInstanceOf(LineString::class, $lineString2);
-        $this->assertInstanceOf(LineString::class, $lineString3);
+        $lineString = Factory::make(GeoJsonType::LineString);
+        $lineString->addPoints($point, $point2);
 
-        [$lineStringPoint, $lineStringPoint2, $lineStringPoint3, $lineStringPoint4, $lineStringPoint5] =
-            Factory::make(GeoJsonType::Point, 5);
-
-        $this->assertInstanceOf(Point::class, $lineStringPoint);
-        $this->assertInstanceOf(Point::class, $lineStringPoint2);
-        $this->assertInstanceOf(Point::class, $lineStringPoint3);
-        $this->assertInstanceOf(Point::class, $lineStringPoint4);
-        $this->assertInstanceOf(Point::class, $lineStringPoint5);
-
-        $lineStringPoint->setPoints(- 101.5, 39.662);
-        $lineStringPoint2->setPoints(- 101.75, 39.2415);
-        $lineStringPoint3->setPoints(- 101.23, 39.2415);
-        $lineStringPoint4->setPoints(- 101.749, 39.7984);
-        $lineStringPoint5->setPoints(- 101.5, 39.011);
-
-        $lineString->addPoints(
-            $lineStringPoint,
-            $lineStringPoint2,
-            $lineStringPoint3,
-            $lineStringPoint4,
-            $lineStringPoint5,
-        );
-
-        [$lineString2Point, $lineString2Point2, $lineString2Point3] = Factory::make(GeoJsonType::Point, 3);
-
-        $this->assertInstanceOf(Point::class, $lineString2Point);
-        $this->assertInstanceOf(Point::class, $lineString2Point2);
-        $this->assertInstanceOf(Point::class, $lineString2Point3);
-
-        $lineString2Point->setPoints(- 99.23, 38.6605);
-        $lineString2Point2->setPoints(- 99.56, 38.727);
-        $lineString2Point3->setPoints(- 99.25, 38.018);
-
-        $lineString2->addPoints($lineString2Point, $lineString2Point2, $lineString2Point3,);
-
-        [$lineString3Point, $lineString3Point2, $lineString3Point3, $lineString3Point4] =
-            Factory::make(GeoJsonType::Point, 4);
-
-        $this->assertInstanceOf(Point::class, $lineString3Point);
-        $this->assertInstanceOf(Point::class, $lineString3Point2);
-        $this->assertInstanceOf(Point::class, $lineString3Point3);
-        $this->assertInstanceOf(Point::class, $lineString3Point4);
-
-        $lineString3Point->setPoints(- 98.499, 38.913);
-        $lineString3Point2->setPoints(- 98.499, 38.913);
-        $lineString3Point3->setPoints(- 98.38, 38.15);
-        $lineString3Point4->setPoints(- 97.5, 38.629);
-
-        $lineString3->addPoints($lineString3Point, $lineString3Point2, $lineString3Point3, $lineString3Point4);
+        $lineString2 = Factory::make(GeoJsonType::LineString);
+        $lineString2->addPoints($point3, $point4);
 
         $multiLineString = Factory::make(GeoJsonType::MultiLineString);
+        $multiLineString->setLineStrings($lineString, $lineString2);
 
         $this->assertInstanceOf(MultiLineString::class, $multiLineString);
-
-        $multiLineString->setLineStrings($lineString, $lineString2, $lineString3);
-        
-        $array = $multiLineString->toArray();
-        
-        $this->assertIsArray($array);
-        $this->assertSame(
-            [
-                [
-                    [- 101.5, 39.662],
-                    [- 101.75, 39.2415],
-                    [- 101.23, 39.2415],
-                    [- 101.749, 39.7984],
-                    [- 101.5, 39.011],
-                ],
-                [
-                    [- 99.23, 38.6605],
-                    [- 99.56, 38.727],
-                    [- 99.25, 38.018],
-                ],
-                [
-                    [- 98.499, 38.913],
-                    [- 98.499, 38.913],
-                    [- 98.38, 38.15],
-                    [- 97.5, 38.629],
-                ],
-            ],
-            $array,
-        );
+        $this->assertCount(2, $multiLineString->getLineStrings());
     }
 
     /**
-     * @throws JsonException
+     * @phpcs:disable SlevomatCodingStandard.Functions.FunctionLength.FunctionLength
      */
-    public function testToJson(): void
+    public function testToArray(): void
     {
-        [$lineString, $lineString2, $lineString3] = Factory::make(GeoJsonType::LineString, 3);
+        [$point, $point2, $point3, $point4] = Factory::make(GeoJsonType::Point, 4);
 
-        $this->assertInstanceOf(LineString::class, $lineString);
-        $this->assertInstanceOf(LineString::class, $lineString2);
-        $this->assertInstanceOf(LineString::class, $lineString3);
+        $point->setPoints(100.0, 0.0);
+        $point2->setPoints(101.0, 1.0);
+        $point3->setPoints(102.0, 0.0);
+        $point4->setPoints(103.0, 1.0);
 
-        [$lineStringPoint, $lineStringPoint2, $lineStringPoint3, $lineStringPoint4, $lineStringPoint5] =
-            Factory::make(GeoJsonType::Point, 5);
+        $lineString = Factory::make(GeoJsonType::LineString);
+        $lineString->addPoints($point, $point2);
 
-        $this->assertInstanceOf(Point::class, $lineStringPoint);
-        $this->assertInstanceOf(Point::class, $lineStringPoint2);
-        $this->assertInstanceOf(Point::class, $lineStringPoint3);
-        $this->assertInstanceOf(Point::class, $lineStringPoint4);
-        $this->assertInstanceOf(Point::class, $lineStringPoint5);
-
-        $lineStringPoint->setPoints(- 101.5, 39.662);
-        $lineStringPoint2->setPoints(- 101.75, 39.2415);
-        $lineStringPoint3->setPoints(- 101.23, 39.2415);
-        $lineStringPoint4->setPoints(- 101.749, 39.7984);
-        $lineStringPoint5->setPoints(- 101.5, 39.011);
-
-        $lineString->addPoints(
-            $lineStringPoint,
-            $lineStringPoint2,
-            $lineStringPoint3,
-            $lineStringPoint4,
-            $lineStringPoint5,
-        );
-
-        [$lineString2Point, $lineString2Point2, $lineString2Point3] = Factory::make(GeoJsonType::Point, 3);
-
-        $this->assertInstanceOf(Point::class, $lineString2Point);
-        $this->assertInstanceOf(Point::class, $lineString2Point2);
-        $this->assertInstanceOf(Point::class, $lineString2Point3);
-
-        $lineString2Point->setPoints(- 99.23, 38.6605);
-        $lineString2Point2->setPoints(- 99.56, 38.727);
-        $lineString2Point3->setPoints(- 99.25, 38.018);
-
-        $lineString2->addPoints($lineString2Point, $lineString2Point2, $lineString2Point3,);
-
-        [$lineString3Point, $lineString3Point2, $lineString3Point3, $lineString3Point4] =
-            Factory::make(GeoJsonType::Point, 4);
-
-        $this->assertInstanceOf(Point::class, $lineString3Point);
-        $this->assertInstanceOf(Point::class, $lineString3Point2);
-        $this->assertInstanceOf(Point::class, $lineString3Point3);
-        $this->assertInstanceOf(Point::class, $lineString3Point4);
-
-        $lineString3Point->setPoints(- 98.499, 38.913);
-        $lineString3Point2->setPoints(- 98.499, 38.913);
-        $lineString3Point3->setPoints(- 98.38, 38.15);
-        $lineString3Point4->setPoints(- 97.5, 38.629);
-
-        $lineString3->addPoints($lineString3Point, $lineString3Point2, $lineString3Point3, $lineString3Point4,);
+        $lineString2 = Factory::make(GeoJsonType::LineString);
+        $lineString2->addPoints($point3, $point4);
 
         $multiLineString = Factory::make(GeoJsonType::MultiLineString);
+        $multiLineString->setLineStrings($lineString, $lineString2);
 
-        $this->assertInstanceOf(MultiLineString::class, $multiLineString);
-
-        $multiLineString->setLineStrings($lineString, $lineString2, $lineString3);
-
-        $json = $multiLineString->toJson();
-
-        $this->assertJson($json);
         $this->assertSame(
-            json_encode(
-                [
-                    [
-                        [- 101.5, 39.662],
-                        [- 101.75, 39.2415],
-                        [- 101.23, 39.2415],
-                        [- 101.749, 39.7984],
-                        [- 101.5, 39.011],
-                    ],
-                    [
-                        [- 99.23, 38.6605],
-                        [- 99.56, 38.727],
-                        [- 99.25, 38.018],
-                    ],
-                    [
-                        [- 98.499, 38.913],
-                        [- 98.499, 38.913],
-                        [- 98.38, 38.15],
-                        [- 97.5, 38.629],
-                    ],
+            [
+                'type' => 'MultiLineString',
+                'coordinates' => [
+                    [[100.0, 0.0], [101.0, 1.0]],
+                    [[102.0, 0.0], [103.0, 1.0]],
                 ],
-                JSON_THROW_ON_ERROR,
-            ),
-            $json,
+            ],
+            $multiLineString->toArray(),
         );
     }
 }

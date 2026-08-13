@@ -6,18 +6,15 @@ namespace RonAppleton\GeoJson\Objects;
 
 use RonAppleton\GeoJson\Abstracts\GeoJsonObject;
 
-use function array_merge;
 use function array_map;
+use function array_merge;
 
-/**
- * @phpcs:disable SlevomatCodingStandard.Commenting.RequireOneLinePropertyDocComment.MultiLinePropertyComment
- */
 class MultiPolygon extends GeoJsonObject
 {
     /**
      * @var array<int, Polygon>
      */
-    private array $polygons;
+    private array $polygons = [];
 
     /**
      * @return array<int, Polygon>
@@ -27,21 +24,26 @@ class MultiPolygon extends GeoJsonObject
         return $this->polygons;
     }
 
-    /**
-     * @param array<int, Polygon> $polygons
-     */
-    public function setPolygons(Polygon ... $polygons): MultiPolygon
+    public function setPolygons(Polygon ... $polygons): static
     {
-        $this->polygons = array_merge($this->polygons ?? [], $polygons);
-        
+        $this->polygons = array_merge($this->polygons, $polygons);
+
         return $this;
     }
 
     /**
-     * @return array<int, mixed>
+     * @return array<int, array<int, array<int, array<int, float>>>>
+     */
+    public function coordinates(): array
+    {
+        return array_map(static fn (Polygon $polygon) => $polygon->coordinates(), $this->polygons);
+    }
+
+    /**
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {
-        return array_map(static fn (Polygon $polygon) => $polygon->toArray(), $this->polygons);
+        return $this->geometryArray($this->coordinates());
     }
 }

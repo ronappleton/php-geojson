@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace RonAppleton\GeoJson\Enums;
 
+use function array_map;
+use function in_array;
+
 enum GeoJsonType: string
 {
     case Point = 'Point';
@@ -22,12 +25,27 @@ enum GeoJsonType: string
      */
     public static function values(): array
     {
-        $values = [];
-        
-        foreach (self::cases() as $case) {
-            $values[] = $case->value;
-        }
-        
-        return $values;
+        return array_map(static fn (self $case) => $case->value, self::cases());
+    }
+
+    /**
+     * @return array<int, self>
+     */
+    public static function geometries(): array
+    {
+        return [
+            self::Point,
+            self::MultiPoint,
+            self::LineString,
+            self::MultiLineString,
+            self::Polygon,
+            self::MultiPolygon,
+            self::GeometryCollection,
+        ];
+    }
+
+    public function isGeometry(): bool
+    {
+        return in_array($this, self::geometries(), true);
     }
 }

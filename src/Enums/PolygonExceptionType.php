@@ -6,6 +6,7 @@ namespace RonAppleton\GeoJson\Enums;
 
 enum PolygonExceptionType: string
 {
-    case PointsNotSet = 'Not points are set on the polygon.';
-    case PointsSet = 'Polygons points are already set.';
+    case ExteriorRingNotSet = 'The exterior ring must be set before adding interior rings.';
+    case ExteriorRingSet = 'The exterior ring is already set.';
+    case RingNotClosed = 'Polygon rings must be closed. The first and last positions must be identical.';
 }

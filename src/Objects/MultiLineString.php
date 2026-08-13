@@ -9,15 +9,12 @@ use RonAppleton\GeoJson\Abstracts\GeoJsonObject;
 use function array_map;
 use function array_merge;
 
-/**
- * @phpcs:disable SlevomatCodingStandard.Commenting.RequireOneLinePropertyDocComment.MultiLinePropertyComment
- */
 class MultiLineString extends GeoJsonObject
 {
     /**
      * @var array<int, LineString>
      */
-    private array $lineStrings;
+    private array $lineStrings = [];
 
     /**
      * @return array<int, LineString>
@@ -27,21 +24,26 @@ class MultiLineString extends GeoJsonObject
         return $this->lineStrings;
     }
 
-    /**
-     * @param array<int, LineString> $lineStrings
-     */
-    public function setLineStrings(LineString ... $lineStrings): MultiLineString
+    public function setLineStrings(LineString ... $lineStrings): static
     {
-        $this->lineStrings = array_merge($this->lineStrings ?? [], $lineStrings);
-        
+        $this->lineStrings = array_merge($this->lineStrings, $lineStrings);
+
         return $this;
     }
 
     /**
-     * @return array<int, mixed>
+     * @return array<int, array<int, array<int, float>>>
+     */
+    public function coordinates(): array
+    {
+        return array_map(static fn (LineString $lineString) => $lineString->coordinates(), $this->lineStrings);
+    }
+
+    /**
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {
-        return array_map(static fn (LineString $lineString) => $lineString->toArray(), $this->lineStrings);
+        return $this->geometryArray($this->coordinates());
     }
 }
