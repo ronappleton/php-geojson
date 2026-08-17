@@ -184,7 +184,7 @@ class Parser
         $feature = Factory::make(GeoJsonType::Feature);
 
         if (array_key_exists('id', $data)) {
-            $feature->setId(self::id($data['id']));
+            $feature->setId(self::castId($data['id']));
         }
 
         $feature->setGeometry(self::geometry($data));
@@ -368,10 +368,12 @@ class Parser
 
         if (count($bbox) === 4) {
             $boundingBox->setPoints(self::position([$bbox[0], $bbox[1]]), self::position([$bbox[2], $bbox[3]]));
-        } else {
-            $boundingBox->setPoints(self::position([$bbox[0], $bbox[1]]), self::position([$bbox[3], $bbox[4]]));
-            $boundingBox->setAltitudes($bbox[2], $bbox[5]);
+
+            return $boundingBox;
         }
+
+        $boundingBox->setPoints(self::position([$bbox[0], $bbox[1]]), self::position([$bbox[3], $bbox[4]]));
+        $boundingBox->setAltitudes($bbox[2], $bbox[5]);
 
         return $boundingBox;
     }
@@ -390,7 +392,7 @@ class Parser
         return $object;
     }
 
-    private static function id(mixed $id): string | int
+    private static function castId(mixed $id): string | int
     {
         if (!is_string($id) && !is_int($id)) {
             throw new ParseException(ParseExceptionType::InvalidId, get_debug_type($id));
